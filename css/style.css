@@ -966,8 +966,6 @@ header .container {
 }
 
 /* ═══════════════════════════════════════════════════════════
-
-/* ═══════════════════════════════════════════════════════════
    CALENDÁRIO DE PROGRAMAÇÕES
 ═══════════════════════════════════════════════════════════ */
 
@@ -1430,6 +1428,23 @@ header .container {
   border-radius: 0.4rem;
   padding: 0.4rem 0.6rem;
   margin-top: 0.1rem;
+}
+
+/* ===========================
+   LINK MAPA
+=========================== */
+.cal-link-mapa {
+  color: #6c757d;
+  font-style: italic;
+  cursor: pointer;
+  width: 100%;
+  text-decoration: none;
+}
+
+@media (max-width: 576px) {
+  .cal-link-mapa {
+    font-size: 0.9rem;
+  }
 }
 
 /* ── Mobile: células quadradas ──────────────────────────── */

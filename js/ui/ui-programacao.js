@@ -549,8 +549,13 @@ function _abrirDetalhesDia(dia, eventosJson) {
         </div>
         <div class="cal-det-infos">
           <div class="cal-det-row">
-            <i class="bi bi-geo-alt-fill me-1" style="color:${cor.dot}"></i>
-            <span>${local?.endereco ?? "Endereço não informado"}</span>
+            <p class="cal-link-mapa copy-text mb-0"
+              data-localid="${p.local_id}"
+              title="Copiar endereço e abrir mapa"
+              style="cursor:pointer;">
+              <i class="bi bi-geo-alt-fill me-1" style="color:${cor.dot}"></i>
+              ${local?.endereco ?? "Endereço não informado"}
+              </p>
           </div>
           <div class="cal-det-row">
             <i class="bi bi-clock-fill" style="color:${cor.dot}"></i>
@@ -597,6 +602,19 @@ function _abrirDetalhesDia(dia, eventosJson) {
   const modal = new bootstrap.Modal(document.getElementById("modalCalDetalhe"));
 
   modal.show();
+
+  document.querySelectorAll(".cal-link-mapa").forEach((el) => {
+    el.addEventListener("click", function () {
+      const localId = this.dataset.localid;
+      const localObj = _getLocalById(localId);
+
+      if (localObj?.endereco) {
+        navigator.clipboard.writeText(localObj.endereco);
+      }
+
+      abrirModalMapa(localId);
+    });
+  });
 
   setTimeout(() => {
     document.activeElement?.blur();

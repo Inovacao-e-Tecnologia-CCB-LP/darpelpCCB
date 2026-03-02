@@ -40,7 +40,17 @@ function copiarTexto(container = document) {
 }
 
 function abrirMapa(localId) {
-  const localObj = locaisMap[localId];
+  let localObj = null;
+
+  // Tenta via Map (inscrições)
+  if (typeof locaisMap !== "undefined" && locaisMap[localId]) {
+    localObj = locaisMap[localId];
+  }
+
+  // Fallback via dataStore (programações)
+  if (!localObj && typeof _getLocalById === "function") {
+    localObj = _getLocalById(localId);
+  }
 
   if (!localObj) {
     abrirModalAviso("Erro", "Endereço não encontrado");
