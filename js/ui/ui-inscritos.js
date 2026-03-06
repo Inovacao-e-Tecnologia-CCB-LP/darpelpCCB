@@ -1,180 +1,171 @@
-let locaisMap = {};
-let programacaoMap = {};
-let instrumentosMap = {};
-let inscritosPorProgramacao = {};
+let estruturaInscritos = {};
 
-function initMaps() {
-  locaisMap = {};
-  dataStore.locais.forEach((l) => {
-    locaisMap[l.id] = l;
-  });
+/* =========================
+   LISTAGEM
+========================= */
 
-  programacaoMap = {};
-  dataStore.programacao.forEach((p) => {
-    programacaoMap[p.id] = p;
-  });
+function renderAccordionInscritos(grupos) {
+  const { locaisMap, programacaoMap, instrumentosMap } = estruturaInscritos;
 
-  instrumentosMap = {};
-  if (dataStore.instrumentos) {
-    dataStore.instrumentos.forEach((i) => {
-      instrumentosMap[i.id] = i;
+  let html = '<div class="accordion" id="accordionInscritos">';
+  let index = 0;
+
+  Object.entries(grupos).forEach(([local, programacoes]) => {
+    const primeiroPid = Object.keys(programacoes)[0];
+    const p = programacaoMap[primeiroPid];
+    if (!p) return;
+
+    const localObj = locaisMap[p.local_id];
+
+    html += `
+      <div class="accordion-item border-dark">
+
+      <h2 class="accordion-header" id="heading-${index}">
+        <button class="accordion-button collapsed bg-dark text-white"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapse-${index}"
+        aria-expanded="false">
+        ${local}
+        </button>
+      </h2>
+
+      <div id="collapse-${index}" 
+           class="accordion-collapse collapse"
+           data-bs-parent="#accordionInscritos">
+
+      <p class="link-mapa copy-text"
+      data-localid="${p.local_id}"
+      title="Copiar endereço e abrir mapa">
+        <i class="bi bi-geo-alt-fill me-1"></i>
+        ${localObj?.endereco ?? "Endereço não informado"}
+      </p>
+
+      <div class="accordion-body bg-light">`;
+
+    Object.entries(programacoes).forEach(([pid, inscritosLista]) => {
+      const p = programacaoMap[pid];
+      if (!p) return;
+
+      html += `
+        <div class="card mb-3 border-dark">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center gap-2 py-3">
+            <div class="text-start">
+              <div class="fw-semibold fs-6">${p.tipo_visita} • ${formatarData(
+                p.data,
+              )}</div>
+              <div class="small opacity-75">${p.descricao} • ${formatarHorario(
+                p.horario,
+              )}</div>
+            </div>
+
+            <button class="btn btn-sm btn-success flex-shrink-0"
+              onclick="compartilhar(${pid})">
+              <i class="bi bi-whatsapp"></i>
+              <span class="d-none d-md-inline ms-1">Compartilhar</span>
+            </button>
+          </div>
+
+          <ul class="list-group list-group-flush">`;
+
+      inscritosLista.forEach((i) => {
+        const auth = localStorageService.buscarAutorizacao(i.id);
+
+        const instNome = instrumentosService.obterNomeInstrumento(
+          i,
+          instrumentosMap,
+        );
+
+        html += `
+          <li class="list-group-item d-flex justify-content-between align-items-center gap-2 py-3">
+            <span class="d-flex flex-column align-items-start">
+              <span class="fw-semibold">${i.nome}</span>
+              <span class="text-muted small">${instNome}</span>
+            </span>
+
+            ${
+              auth
+                ? `<button class="btn btn-sm btn-outline-danger"
+                onclick="excluirInscricao(${i.id}, this)">
+                <i class="bi bi-trash"></i></button>`
+                : ""
+            }
+
+          </li>`;
+      });
+
+      html += `</ul></div>`;
     });
-  }
 
-  inscritosPorProgramacao = {};
-  inscritos.forEach((i) => {
-    if (!inscritosPorProgramacao[i.programacao_id]) {
-      inscritosPorProgramacao[i.programacao_id] = [];
-    }
-    inscritosPorProgramacao[i.programacao_id].push(i);
+    html += `</div></div></div>`;
+    index++;
   });
+
+  html += "</div>";
+
+  conteudo.innerHTML = html;
 }
+
+/* =========================
+   VISUALIZAR INSCRIÇÕES
+========================= */
 
 async function showInscritos() {
   setTitle("Inscrições");
 
   conteudo.innerHTML = `
-        <div class="spinner-border text-dark" role="status">
-            <span class="visually-hidden">Carregando...</span>
-        </div>`;
-
-  abortController = new AbortController();
+    <div class="spinner-border text-dark" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>`;
 
   travarUI();
+
   try {
-    inscritos = await inscricoesService.listar();
+    const inscritos = (await inscricoesService.listar()) || [];
 
-    inscritos = inscritos || [];
+    dataStore.inscritos = inscritos;
 
-    if (inscritos.length === 0) {
+    if (!inscritos.length) {
       conteudo.innerHTML = `
         <div class="alert alert-secondary text-center">
           Nenhuma inscrição encontrada
-        </div>
-      `;
+        </div>`;
       return;
     }
 
-    initMaps();
+    estruturaInscritos = inscricoesService.montarEstrutura(
+      inscritos,
+      dataStore.locais,
+      dataStore.programacao,
+      dataStore.instrumentos || [],
+    );
 
-    const grupos = {};
-
-    inscritos.forEach((i) => {
-      let localNome = i.local;
-      if (i.local_id && locaisMap[i.local_id]) {
-        localNome = locaisMap[i.local_id].nome;
-      } else if (locaisMap[i.local]) {
-        // Se o campo 'local' for o próprio ID
-        localNome = locaisMap[i.local].nome;
-      }
-
-      if (!localNome) return;
-      if (!grupos[localNome]) grupos[localNome] = {};
-      if (!grupos[localNome][i.programacao_id])
-        grupos[localNome][i.programacao_id] = [];
-      grupos[localNome][i.programacao_id].push(i);
-    });
-
-    // ── Accordion único para todas as telas ─────────────────
-    let html = '<div class="accordion" id="accordionInscritos">';
-    let index = 0;
-
-    for (const local in grupos) {
-      const primeiroPid = Object.keys(grupos[local])[0];
-      const p = programacaoMap[primeiroPid];
-      if (!p) continue;
-
-      const localObj = locaisMap[p.local_id];
-
-      html += `
-            <div class="accordion-item border-dark">
-
-            <h2 class="accordion-header" id="heading-${index}">
-                <button class="accordion-button collapsed bg-dark text-white"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapse-${index}">
-                ${local}
-                </button>
-            </h2>
-
-            <div id="collapse-${index}" class="accordion-collapse collapse">
-
-            <p class="link-mapa copy-text" 
-            data-localid="${p.local_id}" 
-            title="Copiar endereço e abrir mapa">
-              <i class="bi bi-geo-alt-fill me-1"></i>
-              ${localObj?.endereco ?? "Endereço não informado"}
-            </p>
-
-            <div class="accordion-body bg-light">`;
-
-      for (const pid in grupos[local]) {
-        const p = programacaoMap[pid];
-        if (!p) continue;
-
-        html += `
-                <div class="card mb-3 border-dark">
-                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center gap-2 py-3">
-                        <div class="text-start">
-                          <div class="fw-semibold fs-6">${p.tipo_visita} &bull; ${formatarData(p.data)}</div>
-                          <div class="small opacity-75">${p.descricao} &bull; ${formatarHorario(p.horario)}</div>
-                        </div>
-                        <button class="btn btn-sm btn-outline-success flex-shrink-0"
-                            onclick="compartilhar(${pid})">
-                            <i class="bi bi-whatsapp me-1"></i>Compartilhar
-                        </button>
-                    </div>
-                    <ul class="list-group list-group-flush">`;
-
-        grupos[local][pid].forEach((i) => {
-          const auth = localStorageService.buscarAutorizacao(i.id);
-
-          let instNome = i.instrumento;
-          if (i.instrumento_id && instrumentosMap[i.instrumento_id]) {
-            instNome = instrumentosMap[i.instrumento_id].nome;
-          } else if (instrumentosMap[i.instrumento]) {
-            instNome = instrumentosMap[i.instrumento].nome;
-          }
-
-          html += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center gap-2 py-3">
-                        <span class="d-flex flex-column align-items-start">
-                          <span class="fw-semibold">${i.nome}</span>
-                          <span class="text-muted small">${instNome}</span>
-                        </span>
-                        ${
-                          auth
-                            ? `<button class="btn btn-sm btn-outline-danger flex-shrink-0"
-                            onclick="excluirInscricao(${i.id}, this)">
-                            <i class="bi bi-trash"></i></button>`
-                            : ""
-                        }
-                    </li>`;
-        });
-
-        html += `</ul></div>`;
-      }
-
-      html += `</div></div></div>`;
-      index++;
-    }
-
-    html += "</div>";
-    conteudo.innerHTML = html;
+    renderAccordionInscritos(estruturaInscritos.grupos);
 
     copiarTexto(conteudo);
   } catch (err) {
     console.error(err);
+
     conteudo.innerHTML = `
-            <div class="alert alert-dark text-center">
-                 Erro ao carregar inscrições
-            </div>`;
+      <div class="alert alert-dark text-center">
+        Erro ao carregar inscrições
+      </div>`;
   } finally {
     liberarUI();
   }
 }
 
+/* =========================
+   COMPARTILHAR MENSAGEM WHATSAPP
+========================= */
+
 function compartilhar(pid) {
+  const {
+    locaisMap,
+    programacaoMap,
+    instrumentosMap,
+    inscritosPorProgramacao,
+  } = estruturaInscritos;
+
   const p = programacaoMap[pid];
   if (!p) {
     abrirModalAviso("Erro", "Programação não encontrada");
@@ -199,19 +190,18 @@ function compartilhar(pid) {
   mensagem += `*Inscritos(${inscritosProg.length}/${localObj.limite}):*\n`;
 
   inscritosProg.forEach((i) => {
-    let instNome = i.instrumento;
-    if (i.instrumento_id && instrumentosMap[i.instrumento_id]) {
-      instNome = instrumentosMap[i.instrumento_id].nome;
-    } else if (instrumentosMap[i.instrumento]) {
-      instNome = instrumentosMap[i.instrumento].nome;
-    }
+    const instNome = instrumentosService.obterNomeInstrumento(
+      i,
+      instrumentosMap,
+    );
+
     mensagem += `• ${i.nome} _(${instNome})_\n`;
   });
 
   mensagem = encodeURIComponent(mensagem);
 
   window.open(
-    `https://api.whatsapp.com/send?text=${mensagem}`,
+    `https://wa.me/?text=${mensagem}`,
     "_blank",
     "noopener,noreferrer",
   );

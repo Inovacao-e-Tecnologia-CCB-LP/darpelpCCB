@@ -7,7 +7,6 @@
      ≤ 400px  = celular pequeno (ajuste fino)
 ═══════════════════════════════════════════════════════════ */
 
-
 /* ─────────────────────────────────────────────────────────
    INSCRITOS — Mobile cards (removido — agora usa accordion
    igual ao desktop em todas as telas)
@@ -31,32 +30,39 @@
 .inscrito-info,
 .inscrito-nome,
 .inscrito-instrumento,
-.inscrito-excluir-btn { display: none !important; }
-
+.inscrito-excluir-btn {
+  display: none !important;
+}
 
 /* ─────────────────────────────────────────────────────────
    BASE GLOBAL — aplica em todas as telas
 ───────────────────────────────────────────────────────── */
 
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100%;
 }
 
-img { max-width: 100%; height: auto; }
+img {
+  max-width: 100%;
+  height: auto;
+}
 
-.card, .item-card { min-width: 0; word-break: break-word; }
-
+.card,
+.item-card {
+  min-width: 0;
+  word-break: break-word;
+}
 
 /* ─────────────────────────────────────────────────────────
    MOBILE ≤ 576px — TAMANHO BASE GRANDE
 ───────────────────────────────────────────────────────── */
 
 @media (max-width: 576px) {
-
   /* ── Corpo geral ───────────────────────────────────── */
   body {
-    font-size: 1.05rem;           /* base maior para idosos */
+    font-size: 1.05rem; /* base maior para idosos */
   }
 
   #conteudo {
@@ -65,14 +71,13 @@ img { max-width: 100%; height: auto; }
     padding-bottom: 2.5rem;
   }
 
-
   /* ── Header ────────────────────────────────────────── */
   header {
     padding: 0.65rem 0 !important;
   }
 
   #titulo {
-    font-size: clamp(1.05rem, 4.5vw, 1.55rem);
+    font-size: clamp(1.05rem, 5vw, 1.55rem);
     font-weight: 500;
   }
 
@@ -84,6 +89,13 @@ img { max-width: 100%; height: auto; }
     border-radius: 0.5rem;
   }
 
+  /* Botão Voltar — ocultar literal no modo mobile */
+  @media (max-width: 576px) {
+    #backButton .back-text {
+      display: none;
+    }
+  }
+
   /* Botão Admin — toque fácil */
   #adminButton {
     padding: 0.55rem 0.75rem;
@@ -91,15 +103,15 @@ img { max-width: 100%; height: auto; }
     min-height: 2.75rem;
   }
 
-
   /* ── Logo ──────────────────────────────────────────── */
-  .logo { width: 200px; }
+  .logo {
+    width: 200px;
+  }
 
   #conteudo h2 {
     font-size: 1.15rem;
     margin-bottom: 1rem !important;
   }
-
 
   /* ── Formulários — inputs grandes ──────────────────── */
   .form-control {
@@ -136,7 +148,6 @@ img { max-width: 100%; height: auto; }
     line-height: 1.5;
   }
 
-
   /* ── Botões — área de toque mínima 48px ─────────────── */
   .btn {
     font-size: 1rem;
@@ -165,7 +176,6 @@ img { max-width: 100%; height: auto; }
   .d-flex.gap-2.justify-content-center.justify-content-md-end .btn {
     width: 100%;
   }
-
 
   /* ── Modais ─────────────────────────────────────────── */
   .modal-dialog {
@@ -201,7 +211,6 @@ img { max-width: 100%; height: auto; }
     font-size: 1rem;
     min-height: 3rem;
   }
-
 
   /* ── Cards gerais ───────────────────────────────────── */
   .card-body {
@@ -253,7 +262,6 @@ img { max-width: 100%; height: auto; }
     padding: 0.25rem 0.75rem;
   }
 
-
   /* ── Grupo seção ────────────────────────────────────── */
   .grupo-secao-header {
     padding: 0.75rem 1rem;
@@ -264,7 +272,6 @@ img { max-width: 100%; height: auto; }
     font-size: 0.82rem;
     padding: 0.18rem 0.6rem;
   }
-
 
   /* ── Badges e chips ─────────────────────────────────── */
   .badge-instrumento {
@@ -277,14 +284,12 @@ img { max-width: 100%; height: auto; }
     padding: 0.35rem 0.8rem;
   }
 
-
   /* ── Link mapa ──────────────────────────────────────── */
   .link-mapa {
     font-size: 1rem;
     padding: 0.7rem 0.9rem;
     margin-left: 0;
   }
-
 
   /* ── Accordion / Inscritos ──────────────────────────── */
   .accordion-button {
@@ -321,7 +326,6 @@ img { max-width: 100%; height: auto; }
     font-size: 1rem;
   }
 
-
   /* ── Grade de escolha (locais, datas, instrumentos) ─── */
   .grade-escolha {
     gap: 0.85rem;
@@ -341,7 +345,6 @@ img { max-width: 100%; height: auto; }
   .grade-escolha .btn i {
     font-size: 1.5rem;
   }
-
 
   /* ── Admin grid — 2 colunas em celular grande ───────── */
   .admin-grid {
@@ -385,17 +388,22 @@ img { max-width: 100%; height: auto; }
     text-align: center;
   }
 
-
   /* ── Calendário ─────────────────────────────────────── */
-  .cal-grid-wrapper { padding: 2px; }
-  .cal-grid { gap: 2px; }
+  .cal-grid-wrapper {
+    padding: 2px;
+  }
+  .cal-grid {
+    gap: 2px;
+  }
 
   .cal-cell {
     padding: 0.2rem 0.1rem 0.14rem;
     border-radius: 0.25rem;
   }
 
-  .cal-num { font-size: 0.72rem; }
+  .cal-num {
+    font-size: 0.72rem;
+  }
 
   .cal-cell.cal-hoje .cal-num {
     width: 1.35rem;
@@ -403,8 +411,13 @@ img { max-width: 100%; height: auto; }
     font-size: 0.7rem;
   }
 
-  .cal-ev-pill { width: 0.44rem; height: 0.44rem; }
-  .cal-ev-mais { font-size: 0.52rem; }
+  .cal-ev-pill {
+    width: 0.44rem;
+    height: 0.44rem;
+  }
+  .cal-ev-mais {
+    font-size: 0.52rem;
+  }
 
   .cal-header-dia {
     font-size: 0.6rem;
@@ -412,9 +425,12 @@ img { max-width: 100%; height: auto; }
     letter-spacing: 0;
   }
 
-  .cal-mes-nome { font-size: 0.92rem; }
-  .cal-nav { padding: 0.6rem 0.75rem; }
-
+  .cal-mes-nome {
+    font-size: 0.92rem;
+  }
+  .cal-nav {
+    padding: 0.6rem 0.75rem;
+  }
 
   /* ── Relatório ──────────────────────────────────────── */
   #listaMusicos {
@@ -427,7 +443,6 @@ img { max-width: 100%; height: auto; }
     padding-right: 0.5rem;
   }
 
-
   /* ── Alerts e feedback ──────────────────────────────── */
   .alert {
     font-size: 1rem;
@@ -439,16 +454,13 @@ img { max-width: 100%; height: auto; }
   .text-danger {
     font-size: 0.92rem;
   }
-
 }
-
 
 /* ─────────────────────────────────────────────────────────
    MOBILE PEQUENO ≤ 400px — ajuste fino
 ───────────────────────────────────────────────────────── */
 
 @media (max-width: 400px) {
-
   /* Admin: 1 coluna em telas muito pequenas */
   .admin-grid {
     grid-template-columns: 1fr;
@@ -488,12 +500,27 @@ img { max-width: 100%; height: auto; }
   }
 
   /* Calendário: ainda mais compacto */
-  .cal-grid-wrapper { padding: 1px; }
-  .cal-grid { gap: 1px; }
-  .cal-num { font-size: 0.62rem; }
-  .cal-cell.cal-hoje .cal-num { width: 1.15rem; height: 1.15rem; font-size: 0.6rem; }
-  .cal-header-dia { font-size: 0.5rem; padding: 0.32rem 0.02rem; }
-  .cal-mes-nome { font-size: 0.84rem; }
+  .cal-grid-wrapper {
+    padding: 1px;
+  }
+  .cal-grid {
+    gap: 1px;
+  }
+  .cal-num {
+    font-size: 0.62rem;
+  }
+  .cal-cell.cal-hoje .cal-num {
+    width: 1.15rem;
+    height: 1.15rem;
+    font-size: 0.6rem;
+  }
+  .cal-header-dia {
+    font-size: 0.5rem;
+    padding: 0.32rem 0.02rem;
+  }
+  .cal-mes-nome {
+    font-size: 0.84rem;
+  }
 
   /* Grade de escolha */
   .grade-escolha .btn {
@@ -502,17 +529,28 @@ img { max-width: 100%; height: auto; }
     min-height: 3.75rem;
   }
 
-  .grade-escolha .btn i { font-size: 1.4rem; }
+  .grade-escolha .btn i {
+    font-size: 1.4rem;
+  }
 
   /* Botões */
-  .btn { font-size: 0.97rem; min-height: 2.9rem; }
-  .btn-lg { font-size: 1.1rem; min-height: 3.3rem; }
+  .btn {
+    font-size: 0.97rem;
+    min-height: 2.9rem;
+  }
+  .btn-lg {
+    font-size: 1.1rem;
+    min-height: 3.3rem;
+  }
 
   /* List items inscritos */
-  .list-group-item { padding: 0.9rem 0.9rem; }
-  .list-group-item .fw-semibold { font-size: 1rem; }
+  .list-group-item {
+    padding: 0.9rem 0.9rem;
+  }
+  .list-group-item .fw-semibold {
+    font-size: 1rem;
+  }
 }
-
 
 /* ─────────────────────────────────────────────────────────
    MODAL — large no mobile para modais do admin
@@ -524,7 +562,6 @@ img { max-width: 100%; height: auto; }
     align-items: flex-start;
   }
 }
-
 
 /* ─────────────────────────────────────────────────────────
    ADMIN CARD — ícone colorido e descrição (todas as telas)

@@ -439,13 +439,13 @@ function _renderAcoesPublico() {
         <button class="btn btn-primary w-100 w-md-auto"
           onclick="_baixarImagemCalendario()">
           <i class="bi bi-image me-1"></i>
-          Baixar imagem
+          Gerar imagem
         </button>
 
         <button class="btn btn-secondary w-100 w-md-auto"
           onclick="_baixarPdfCalendario()">
           <i class="bi bi-file-earmark-pdf me-1"></i>
-          Baixar PDF
+          Gerar PDF
         </button>
 
         <button class="btn btn-success w-100 w-md-auto"
