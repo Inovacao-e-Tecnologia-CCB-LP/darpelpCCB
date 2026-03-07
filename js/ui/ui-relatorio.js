@@ -1,3 +1,9 @@
+let inscritos = [];
+let inscritosPorProgramacao = {};
+let instrumentosMap = {};
+let locaisMap = {};
+let programacaoMap = {};
+
 /* =========================
    STATE
 ========================= */
@@ -96,7 +102,18 @@ async function abrirTelaRelatorios() {
   travarUI();
   try {
     inscritos = await inscricoesService.listar();
-    initMaps();
+
+    const estrutura = inscricoesService.montarEstrutura(
+      inscritos,
+      dataStore.locais,
+      dataStore.programacao,
+      dataStore.instrumentos || [],
+    );
+
+    inscritosPorProgramacao = estrutura.inscritosPorProgramacao;
+    instrumentosMap = estrutura.instrumentosMap;
+    locaisMap = estrutura.locaisMap;
+    programacaoMap = estrutura.programacaoMap;
 
     conteudo.innerHTML = Ui.PainelRelatorio();
     RelatorioState.reset();
@@ -111,12 +128,11 @@ async function abrirTelaRelatorios() {
 
     // ── Sugestão de nome do responsável via localStorage ──────────────────
     _preencherResponsavelLocalStorage();
-
   } catch (err) {
     console.error(err);
     conteudo.innerHTML = UiRelatorios.alerta(
       "danger",
-      " Erro ao carregar dados dos relatórios",
+      " Erro ao carregar tela de relatório",
     );
   } finally {
     liberarUI();
@@ -173,9 +189,11 @@ function _preencherResponsavelLocalStorage() {
     inputResponsavel.dispatchEvent(new Event("input"));
   });
 
-  document.getElementById("btnIgnorarNomeSalvo").addEventListener("click", () => {
-    container.remove();
-  });
+  document
+    .getElementById("btnIgnorarNomeSalvo")
+    .addEventListener("click", () => {
+      container.remove();
+    });
 }
 
 /* =========================
@@ -308,10 +326,7 @@ function carregarMusicosRelatorio(programacaoId) {
   ul.className = "list-unstyled mb-0";
 
   inscritosProg.forEach((i, index) => {
-    let instNome = i.instrumento;
-    if (i.instrumento_id && instrumentosMap[i.instrumento_id]) {
-      instNome = instrumentosMap[i.instrumento_id].nome;
-    }
+    const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
 
     const li = document.createElement("li");
     li.className = "d-flex justify-content-between align-items-center mb-1";
@@ -402,7 +417,7 @@ function salvarMusicoModal() {
   if (!nome || !instrumento) {
     mostrarErroCampo(
       "erroValidacaoCamposMusico",
-      "Preencha todos os campos obrigatórios.",
+      "Preencha todos os campos obrigatórios",
     );
     return;
   }
@@ -622,11 +637,10 @@ async function gerarPDF() {
     doc.text("Nenhum músico inscrito", MARGEM_ESQ, y);
   } else {
     dados.musicos.forEach((c) => {
-      let instNome = c.instrumento;
-
-      if (c.instrumento_id && instrumentosMap[c.instrumento_id]) {
-        instNome = instrumentosMap[c.instrumento_id].nome;
-      }
+      const instNome = instrumentosService.obterNomeInstrumento(
+        c,
+        instrumentosMap,
+      );
 
       const texto = instNome ? `${c.nome} (${instNome})` : c.nome;
 
@@ -713,7 +727,7 @@ function enviarWhatsAppRelatorio() {
   const mensagem = gerarMensagemWhatsAppRelatorio(dados);
 
   window.open(
-    `https://api.whatsapp.com/send?text=${mensagem}`,
+    `https://wa.me/?text=${mensagem}`,
     "_blank",
     "noopener,noreferrer",
   );

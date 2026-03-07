@@ -29,7 +29,7 @@ body {
 }
 
 #titulo {
-  font-weight: 300;
+  font-weight: 400;
   /* Mantém o tamanho natural do Bootstrap .h3 (~1.75rem desktop) */
 }
 
@@ -37,8 +37,48 @@ body {
   background-color: #e9ecef;
 }
 
-.accordion-button.bg-dark::after {
+#accordionInscritos {
+  --bs-accordion-active-bg: #212529;
+  --bs-accordion-active-color: #fff;
+  --bs-accordion-btn-focus-box-shadow: none;
+
+  /* remove ícone laranja */
+  --bs-accordion-btn-active-icon: var(--bs-accordion-btn-icon);
+}
+
+.accordion-item {
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
+  margin-bottom: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.accordion-button {
+  background: #212529;
+  color: #f1f1f1;
+}
+
+.accordion-button:not(.collapsed) {
+  background: #212529;
+  color: #f1f1f1;
+}
+
+.accordion-body {
+  background: #1f2327;
+  color: #f1f1f1;
+}
+
+#accordionInscritos .accordion-button.bg-dark::after {
   filter: invert(1);
+}
+
+#accordionInscritos .accordion-item {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+#accordionInscritos .accordion-item + .accordion-item {
+  margin-top: 5px;
 }
 
 /* ===========================
@@ -83,8 +123,9 @@ header .container {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: clamp(1rem, 4vw, 1.75rem);
+  font-size: clamp(1rem, 4vw, 1.65rem);
   pointer-events: auto;
+  line-height: 1.4;
 }
 
 @media (max-width: 576px) {
@@ -1998,9 +2039,10 @@ header .container {
   padding: 12px 16px;
   border: none;
   border-radius: 0.75rem;
-  background-color: #f8fafc;
+  background-color: #f1f1f1;
   margin-bottom: 0.85rem;
   box-sizing: border-box;
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.1);
   cursor: default; /* não mostra pointer */
 }
 

@@ -2,7 +2,7 @@
   <div class="card shadow-sm border-0">
     <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
       <i class="bi bi-clipboard-check fs-5"></i>
-      <h5 class="mb-0">Relatório de Programação</h5>
+      <h5 class="mb-0">Relatório de Atendimento</h5>
     </div>
 
     <div class="card-body">
@@ -143,12 +143,14 @@
 
                 <div class="card-body">
                   <p class="text-muted small mb-3 text-center">
-                    Os dados serão utilizados exclusivamente no relatório
+                    Os dados serão utilizados exclusivamente no relatório.
                   </p>
 
                   <div class="row g-3 justify-content-center">
                     <div class="col-12">
-                      <label class="form-label">Palavra</label>
+                      <label class="form-label">
+                        <i class="bi bi-book"></i> Palavra
+                      </label>
                       <input
                         type="text"
                         id="palavra"
@@ -157,9 +159,9 @@
                         data-input-filter="biblia"
                       />
                       <div class="form-text text-center">
-                        Informe o livro, capítulo e versículos
+                        Informe o livro, capítulo e versículos.
                         <br />
-                        Se não houve palavra, deixe em branco
+                        (Se não houve palavra, deixe em branco)
                       </div>
                     </div>
                   </div>
@@ -194,7 +196,7 @@
               class="btn btn-success"
               onclick="enviarWhatsAppRelatorio()"
             >
-              <i class="bi bi-whatsapp"></i> Enviar no WhatsApp
+              <i class="bi bi-whatsapp"></i> Compartilhar
             </button>
           </div>
         </div>

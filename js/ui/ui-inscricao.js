@@ -131,9 +131,25 @@ function showEscolherData() {
   programacoesFiltradas.forEach((p) => {
     const btn = document.createElement("button");
     btn.className = "btn btn-outline-dark";
-    btn.innerHTML = `<i class="bi bi-calendar-event"></i><span><strong>${p.tipo_visita}</strong> &mdash; ${formatarData(p.data)}<br><small class="text-muted">${p.descricao} &bull; ${formatarHorario(p.horario)}</small></span>`;
+
+    const iconesTipoVisita = {
+      Evangelização: "bi bi-book",
+      Música: "bi bi-music-note-beamed",
+    };
+
+    const icone = iconesTipoVisita[p.tipo_visita] || "bi bi-calendar-event";
+
+    btn.innerHTML = `
+    <i class="${icone}"></i>
+    <span>
+      <strong>${p.tipo_visita} &bull; ${formatarData(p.data)} </strong><br>
+      <small class="text-muted">${p.descricao} &bull; ${formatarHorario(p.horario)}</small>
+    </span>
+  `;
+
     btn.style.alignItems = "flex-start";
     btn.onclick = () => selecionarData(p);
+
     g.appendChild(btn);
   });
 
