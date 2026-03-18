@@ -111,6 +111,17 @@ async function abrirModalAviso(titulo, mensagem) {
 }
 
 /* ================================================
+   MODAL DE AJUDA
+================================================ */
+async function abrirModalAjuda() {
+  await _aguardarFechamentoModal();
+
+  const modalEl = document.getElementById("modalAjuda");
+  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  modal.show();
+}
+
+/* ================================================
    MODAL DE CONFIRMAÇÃO (retorna Promise<boolean>)
 ================================================ */
 function abrirModalConfirmacao(mensagem, textoBotao = "Confirmar") {
