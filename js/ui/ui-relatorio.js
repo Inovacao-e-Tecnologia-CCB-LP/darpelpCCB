@@ -86,6 +86,9 @@ function obterValoresFormularioRelatorio() {
   return {
     responsavel: document.getElementById("responsavel")?.value?.trim() || "",
     qtdInternos: Number(document.getElementById("qtdInternos")?.value || 0),
+    qtdColaboradores: Number(
+      document.getElementById("qtdColaboradores")?.value || 0,
+    ),
     palavra: document.getElementById("palavra")?.value || "",
     observacoes: document.getElementById("observacoes")?.value || "",
   };
@@ -326,7 +329,10 @@ function carregarMusicosRelatorio(programacaoId) {
   ul.className = "list-unstyled mb-0";
 
   inscritosProg.forEach((i, index) => {
-    const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
+    const instNome = instrumentosService.obterNomeInstrumento(
+      i,
+      instrumentosMap,
+    );
 
     const li = document.createElement("li");
     li.className = "d-flex justify-content-between align-items-center mb-1";
@@ -494,6 +500,7 @@ function montarDadosRelatorio() {
     musicos,
     qtdMusicos: qtdMusicosManual,
     qtdInternos: form.qtdInternos,
+    qtdColaboradores: form.qtdColaboradores,
     observacoes: form.observacoes,
     evangelizacao:
       programacao.tipo_visita === "Evangelização"
@@ -532,7 +539,7 @@ async function gerarPDF() {
   /* ================= CABEÇALHO ================= */
   doc.setFont("helvetica", "bold");
   doc.setFontSize(FONT_TITULO);
-  doc.text("DARPE", 105, y, { align: "center" });
+  doc.text("DARPE - Lençóis Paulista", 105, y, { align: "center" });
   y += 7;
 
   doc.setFont("helvetica", "normal");
@@ -561,7 +568,7 @@ async function gerarPDF() {
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(FONT_TEXTO);
-    doc.text(valor || "-", MARGEM_ESQ + 55, y);
+    doc.text(valor || "-", MARGEM_ESQ + 70, y);
 
     y += 7; //  antes era 9
 
@@ -590,6 +597,10 @@ async function gerarPDF() {
   }
 
   linha("Qtde. Músicos:", String(dados.qtdMusicos));
+
+  if (dados.qtdColaboradores > 0) {
+    linha("Qtde. Colaboradores DARPE:", String(dados.qtdColaboradores));
+  }
 
   /* ================= EVANGELIZAÇÃO ================= */
   if (dados.evangelizacao) {
@@ -627,7 +638,7 @@ async function gerarPDF() {
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(FONT_SUBTITULO);
-  doc.text("Nome/Instrumento dos Músicos", MARGEM_ESQ, y);
+  doc.text("Nome/Instrumento dos Músicos:", MARGEM_ESQ, y);
   y += 6;
 
   doc.setFont("helvetica", "normal");
@@ -684,13 +695,21 @@ function gerarMensagemWhatsAppRelatorio(dados) {
   linhas.push(
     `*Horário:* _${dados.programacao?.horario?.replace(/'/g, "") || "-"}_`,
   );
+
   linhas.push(
     `*Tipo de Visita:* _${dados.programacao?.tipo_visita} – ${dados.programacao?.descricao}_`,
   );
+
   if (dados.qtdInternos > 0) {
     linhas.push(`*Qtde. Internos:* _${dados.qtdInternos}_`);
   }
+
   linhas.push(`*Qtde. Músicos:* _${dados.qtdMusicos}_`);
+
+  if (dados.qtdColaboradores > 0) {
+    linhas.push(`*Qtde. Colaboradores DARPE:* _${dados.qtdColaboradores}_`);
+  }
+
   if (dados.evangelizacao?.palavra) {
     linhas.push(`*Palavra:* _${dados.evangelizacao.palavra}_`);
   }
