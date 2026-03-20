@@ -11,51 +11,63 @@ function renderAccordionInscritos(grupos) {
   let index = 0;
 
   Object.entries(grupos).forEach(([local, programacoes]) => {
-    const primeiroPid = Object.keys(programacoes)[0];
-    const p = programacaoMap[primeiroPid];
-    if (!p) return;
+    const pidsValidos = Object.keys(programacoes).filter(
+      (pid) => programacaoMap[pid]
+    );
 
-    const localObj = locaisMap[p.local_id];
+    if (pidsValidos.length === 0) {
+      console.warn("Nenhuma programação válida nesse grupo:", local);
+      return;
+    }
+
+    const currentIndex = index;
+    const pRef = programacaoMap[pidsValidos[0]];
+    const localObj = locaisMap[pRef.local_id];
+
+    if (!localObj) {
+      console.warn("Local não encontrado:", pRef.local_id);
+    }
 
     html += `
       <div class="accordion-item border-dark">
 
-      <h2 class="accordion-header" id="heading-${index}">
-        <button class="accordion-button collapsed bg-dark text-white"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapse-${index}"
-        aria-expanded="false">
-        ${local}
-        </button>
-      </h2>
+        <h2 class="accordion-header" id="heading-${currentIndex}">
+          <button class="accordion-button collapsed bg-dark text-white"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapse-${currentIndex}"
+            aria-expanded="false">
+            ${local}
+          </button>
+        </h2>
 
-      <div id="collapse-${index}" 
-           class="accordion-collapse collapse"
-           data-bs-parent="#accordionInscritos">
+        <div id="collapse-${currentIndex}" 
+             class="accordion-collapse collapse"
+             data-bs-parent="#accordionInscritos">
 
-      <p class="link-mapa copy-text"
-      data-localid="${p.local_id}"
-      title="Copiar endereço e abrir mapa">
-        <i class="bi bi-geo-alt-fill me-1"></i>
-        ${localObj?.endereco ?? "Endereço não informado"}
-      </p>
+          <p class="link-mapa copy-text"
+            data-localid="${pRef.local_id}"
+            title="Copiar endereço e abrir mapa">
+            <i class="bi bi-geo-alt-fill me-1"></i>
+            ${localObj?.endereco ?? "Endereço não informado"}
+          </p>
 
-      <div class="accordion-body bg-light">`;
+          <div class="accordion-body bg-light">
+    `;
 
-    Object.entries(programacoes).forEach(([pid, inscritosLista]) => {
+    pidsValidos.forEach((pid) => {
+      const inscritosLista = programacoes[pid];
       const p = programacaoMap[pid];
-      if (!p) return;
 
       html += `
         <div class="card mb-3 border-dark">
           <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center gap-2 py-3">
             <div class="text-start">
-              <div class="fw-semibold fs-6">${p.tipo_visita} • ${formatarData(
-                p.data,
-              )}</div>
-              <div class="small opacity-75">${p.descricao} • ${formatarHorario(
-                p.horario,
-              )}</div>
+              <div class="fw-semibold fs-6">
+                ${p.tipo_visita} • ${formatarData(p.data)}
+              </div>
+              <div class="small opacity-75">
+                ${p.descricao} • ${formatarHorario(p.horario)}
+              </div>
             </div>
 
             <button class="btn btn-sm btn-success flex-shrink-0"
@@ -65,14 +77,15 @@ function renderAccordionInscritos(grupos) {
             </button>
           </div>
 
-          <ul class="list-group list-group-flush">`;
+          <ul class="list-group list-group-flush">
+      `;
 
       inscritosLista.forEach((i) => {
         const auth = localStorageService.buscarAutorizacao(i.id);
 
         const instNome = instrumentosService.obterNomeInstrumento(
           i,
-          instrumentosMap,
+          instrumentosMap
         );
 
         html += `
@@ -85,23 +98,36 @@ function renderAccordionInscritos(grupos) {
             ${
               auth
                 ? `<button class="btn btn-sm btn-outline-danger"
-                onclick="excluirInscricao(${i.id}, this)">
-                <i class="bi bi-trash"></i></button>`
+                    onclick="excluirInscricao(${i.id}, this)">
+                    <i class="bi bi-trash"></i>
+                  </button>`
                 : ""
             }
-
-          </li>`;
+          </li>
+        `;
       });
 
       html += `</ul></div>`;
     });
 
-    html += `</div></div></div>`;
+    html += `
+          </div>
+        </div>
+      </div>
+    `;
+
     index++;
   });
 
-  html += "</div>";
+  if (index === 0) {
+    conteudo.innerHTML = `
+      <div class="alert alert-secondary text-center">
+        Nenhuma programação válida encontrada
+      </div>`;
+    return;
+  }
 
+  html += "</div>";
   conteudo.innerHTML = html;
 }
 
@@ -136,7 +162,7 @@ async function showInscritos() {
       inscritos,
       dataStore.locais,
       dataStore.programacao,
-      dataStore.instrumentos || [],
+      dataStore.instrumentos || []
     );
 
     renderAccordionInscritos(estruturaInscritos.grupos);
@@ -192,7 +218,7 @@ function compartilhar(pid) {
   inscritosProg.forEach((i) => {
     const instNome = instrumentosService.obterNomeInstrumento(
       i,
-      instrumentosMap,
+      instrumentosMap
     );
 
     mensagem += `• ${i.nome} _(${instNome})_\n`;
@@ -203,6 +229,6 @@ function compartilhar(pid) {
   window.open(
     `https://wa.me/?text=${mensagem}`,
     "_blank",
-    "noopener,noreferrer",
+    "noopener,noreferrer"
   );
 }

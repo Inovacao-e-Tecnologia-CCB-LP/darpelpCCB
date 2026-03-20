@@ -66,6 +66,12 @@ function abrirMapa(localId) {
   window.open(url, "_blank", "noopener");
 }
 
+function abrirWhatsApp(numero) {
+  const mensagem = `A Paz de Deus! Estou com uma dúvida sobre como utilizar o sistema de agendamentos do DARPE.`;
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 function mostrarLoading(containerId) {
   const el = document.getElementById(containerId);
   if (!el) return;

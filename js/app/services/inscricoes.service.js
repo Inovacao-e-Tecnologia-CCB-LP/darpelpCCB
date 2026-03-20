@@ -29,17 +29,31 @@ class InscricoesService {
     instrumentos.forEach((i) => (instrumentosMap[i.id] = i));
 
     inscritos.forEach((i) => {
+      const programacaoValida = programacaoMap[i.programacao_id];
+
+      if (!programacaoValida) {
+        console.warn("Inscrição com programação inválida:", {
+          id: i.id,
+          nome: i.nome,
+          programacao_id: i.programacao_id,
+        });
+        return;
+      }
+
       (inscritosPorProgramacao[i.programacao_id] ??= []).push(i);
 
       let localNome = null;
 
-      if (i.local_id && locaisMap[i.local_id]) {
-        localNome = locaisMap[i.local_id].nome;
+      if (i.local && locaisMap[i.local]) {
+        localNome = locaisMap[i.local].nome;
       } else if (i.local) {
         localNome = i.local;
       }
 
-      if (!localNome) return;
+      if (!localNome) {
+        console.warn("Inscrição sem local válido:", i);
+        return;
+      }
 
       grupos[localNome] ??= {};
       (grupos[localNome][i.programacao_id] ??= []).push(i);
