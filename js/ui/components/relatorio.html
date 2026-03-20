@@ -96,9 +96,9 @@
             ></textarea>
           </div>
 
-          <!-- QTDE INTERNOS + QTDE MÚSICOS -->
+          <!-- QTDE INTERNOS + QTDE MÚSICOS + COLABORADORES -->
           <div class="row g-2 mt-4">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label fw-semibold">
                 <i class="bi bi-person-fill me-1"></i> Qtde. Internos
               </label>
@@ -112,7 +112,7 @@
               <div class="form-text">Quantidade de internos no local</div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="form-label fw-semibold">
                 <i class="bi bi-music-note-beamed me-1"></i> Qtde. Músicos
               </label>
@@ -124,6 +124,22 @@
                 data-input-filter="numero"
               />
               <div class="form-text">Quantidade de músicos no local</div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-people-fill me-1"></i> Qtde. Colaboradores
+              </label>
+              <input
+                type="number"
+                id="qtdColaboradores"
+                class="form-control"
+                min="0"
+                data-input-filter="numero"
+              />
+              <div class="form-text">
+                Quantidade de colaboradores DARPE no local
+              </div>
             </div>
           </div>
 
