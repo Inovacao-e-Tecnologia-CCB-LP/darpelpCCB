@@ -5,9 +5,9 @@ let nomesTemporarios = [];
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function abrirTelaIntegracoes() {
-  setTitle("Integrações");
-  conteudo.innerHTML = Ui.PainelIntegracoes();
-  await carregarIntegracoes(true);
+	setTitle('Integrações');
+	conteudo.innerHTML = Ui.PainelIntegracoes();
+	await carregarIntegracoes(true);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -15,30 +15,30 @@ async function abrirTelaIntegracoes() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function carregarIntegracoes(firstTime = false) {
-  travarUI();
-  try {
-    mostrarLoading("listaIntegracoes");
+	travarUI();
+	try {
+		mostrarLoading('listaIntegracoes');
 
-    const nomes = firstTime
-      ? (dataStore.nomes_integracao ?? (await integracoesService.listar()))
-      : await integracoesService.listar();
+		const nomes = firstTime
+			? (dataStore.nomes_integracao ?? (await integracoesService.listar()))
+			: await integracoesService.listar();
 
-    if (nomes?.error) throw new Error(nomes.error);
+		if (nomes?.error) throw new Error(nomes.error);
 
-    const lista = nomes || [];
-    dataStore.nomes_integracao = lista;
+		const lista = nomes || [];
+		dataStore.nomes_integracao = lista;
 
-    renderizarIntegracoes(lista);
-  } catch (err) {
-    console.error(err);
-    document.getElementById("listaIntegracoes").innerHTML = `
+		renderizarIntegracoes(lista);
+	} catch (err) {
+		console.error(err);
+		document.getElementById('listaIntegracoes').innerHTML = `
       <div class="alert alert-danger text-center">
         Erro ao carregar integrações
       </div>
     `;
-  } finally {
-    liberarUI();
-  }
+	} finally {
+		liberarUI();
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -46,44 +46,42 @@ async function carregarIntegracoes(firstTime = false) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function renderizarIntegracoes(nomes) {
-  const container = document.getElementById("listaIntegracoes");
-  if (!container) return;
+	const container = document.getElementById('listaIntegracoes');
+	if (!container) return;
 
-  if (!nomes.length) {
-    container.innerHTML = `
+	if (!nomes.length) {
+		container.innerHTML = `
       <div class="alert alert-secondary text-center">
         Nenhuma integração cadastrada
       </div>
     `;
-    return;
-  }
+		return;
+	}
 
-  const grupos = {};
-  nomes.forEach((n) => {
-    const idLocal = Number(n.id_local);
-    if (!grupos[idLocal]) grupos[idLocal] = [];
-    grupos[idLocal].push(n);
-  });
+	const grupos = {};
+	nomes.forEach((n) => {
+		const idLocal = Number(n.id_local);
+		if (!grupos[idLocal]) grupos[idLocal] = [];
+		grupos[idLocal].push(n);
+	});
 
-  renderCardsIntegracoes(grupos);
+	renderCardsIntegracoes(grupos);
 }
 
 function renderTabelaIntegracoes(grupos) {
-  renderCardsIntegracoes(grupos);
+	renderCardsIntegracoes(grupos);
 }
 
 function renderCardsIntegracoes(grupos) {
-  const container = document.getElementById("listaIntegracoes");
+	const container = document.getElementById('listaIntegracoes');
 
-  let html = '<div class="d-flex flex-column gap-4">';
+	let html = '<div class="d-flex flex-column gap-4">';
 
-  Object.entries(grupos).forEach(([idLocal, nomes]) => {
-    const local = dataStore.locais.find(
-      (l) => Number(l.id) === Number(idLocal),
-    );
-    const nomeLocal = local?.nome || "Local não encontrado";
+	Object.entries(grupos).forEach(([idLocal, nomes]) => {
+		const local = dataStore.locais.find((l) => Number(l.id) === Number(idLocal));
+		const nomeLocal = local?.nome || 'Local não encontrado';
 
-    html += `
+		html += `
       <div class="grupo-secao">
         <div class="grupo-secao-header">
           <i class="bi bi-geo-alt-fill"></i>
@@ -101,9 +99,9 @@ function renderCardsIntegracoes(grupos) {
         </div>
         <div class="d-flex flex-column gap-2">`;
 
-    nomes.forEach((n) => {
-      const nomeEscaped = encodeURIComponent(n.nome);
-      html += `
+		nomes.forEach((n) => {
+			const nomeEscaped = encodeURIComponent(n.nome);
+			html += `
           <div class="item-card item-card-compacto">
             <div class="item-card-body d-flex align-items-center justify-content-between gap-3">
               <div class="d-flex align-items-center gap-2">
@@ -125,13 +123,13 @@ function renderCardsIntegracoes(grupos) {
               </div>
             </div>
           </div>`;
-    });
+		});
 
-    html += "</div></div>";
-  });
+		html += '</div></div>';
+	});
 
-  html += "</div>";
-  container.innerHTML = html;
+	html += '</div>';
+	container.innerHTML = html;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -139,19 +137,19 @@ function renderCardsIntegracoes(grupos) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function compartilharNomeIntegracao(nomeEncoded, btn) {
-  const nome = decodeURIComponent(nomeEncoded);
-  const original = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+	const nome = decodeURIComponent(nomeEncoded);
+	const original = btn.innerHTML;
+	btn.disabled = true;
+	btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
 
-  try {
-    await integracoesService.compartilhar(nome);
-  } catch (err) {
-    console.error("Erro ao compartilhar:", err);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = original;
-  }
+	try {
+		await integracoesService.compartilhar(nome);
+	} catch (err) {
+		console.error('Erro ao compartilhar:', err);
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = original;
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -159,99 +157,95 @@ async function compartilharNomeIntegracao(nomeEncoded, btn) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function abrirModalIntegracao() {
-  nomesTemporarios = [];
+	nomesTemporarios = [];
 
-  document.getElementById("inputNomeIntegracao").value = "";
-  document.getElementById("selectLocalIntegracao").value = "";
-  document.getElementById("erroIntegracaoLocal").classList.add("d-none");
-  document.getElementById("erroIntegracaoNomes").classList.add("d-none");
+	document.getElementById('inputNomeIntegracao').value = '';
+	document.getElementById('selectLocalIntegracao').value = '';
+	document.getElementById('erroIntegracaoLocal').classList.add('d-none');
+	document.getElementById('erroIntegracaoNomes').classList.add('d-none');
 
-  // Desbloqueia o select de local (pode ter sido desabilitado pelo modo editar)
-  const select = document.getElementById("selectLocalIntegracao");
-  select.disabled = false;
+	// Desbloqueia o select de local (pode ter sido desabilitado pelo modo editar)
+	const select = document.getElementById('selectLocalIntegracao');
+	select.disabled = false;
 
-  document.getElementById("modalIntegracaoTitulo").textContent =
-    "Nova Integração";
-  document.getElementById("btnSalvarIntegracao").onclick = salvarIntegracao;
+	document.getElementById('modalIntegracaoTitulo').textContent = 'Nova Integração';
+	document.getElementById('btnSalvarIntegracao').onclick = salvarIntegracao;
 
-  _preencherLocaisSelect();
-  _renderListaTemporaria();
+	_preencherLocaisSelect();
+	_renderListaTemporaria();
 
-  bootstrap.Modal.getOrCreateInstance(
-    document.getElementById("modalIntegracao"),
-  ).show();
+	bootstrap.Modal.getOrCreateInstance(document.getElementById('modalIntegracao')).show();
 }
 
 function _preencherLocaisSelect(idLocalSelecionado = null) {
-  const select = document.getElementById("selectLocalIntegracao");
-  if (!select) return;
+	const select = document.getElementById('selectLocalIntegracao');
+	if (!select) return;
 
-  select.innerHTML = `<option value="">Selecione o local</option>`;
+	select.innerHTML = `<option value="">Selecione o local</option>`;
 
-  if (!dataStore?.locais?.length) {
-    const opt = document.createElement("option");
-    opt.textContent = "Nenhum local disponível";
-    opt.disabled = true;
-    select.appendChild(opt);
-    return;
-  }
+	if (!dataStore?.locais?.length) {
+		const opt = document.createElement('option');
+		opt.textContent = 'Nenhum local disponível';
+		opt.disabled = true;
+		select.appendChild(opt);
+		return;
+	}
 
-  dataStore.locais.forEach((local) => {
-    const opt = document.createElement("option");
-    opt.value = local.id;
-    opt.textContent = local.nome;
-    if (idLocalSelecionado && Number(local.id) === Number(idLocalSelecionado)) {
-      opt.selected = true;
-    }
-    select.appendChild(opt);
-  });
+	dataStore.locais.forEach((local) => {
+		const opt = document.createElement('option');
+		opt.value = local.id;
+		opt.textContent = local.nome;
+		if (idLocalSelecionado && Number(local.id) === Number(idLocalSelecionado)) {
+			opt.selected = true;
+		}
+		select.appendChild(opt);
+	});
 }
 
 async function adicionarNomeIntegracao() {
-  const input = document.getElementById("inputNomeIntegracao");
-  let nome = input.value.trim();
+	const input = document.getElementById('inputNomeIntegracao');
+	let nome = input.value.trim();
 
-  if (!nome) return;
+	if (!nome) return;
 
-  // Capitaliza e verifica acentuação
-  nome = localStorageService.capitalizarNome(nome);
-  nome = await NomeCorrector.processar(nome);
+	// Capitaliza e verifica acentuação
+	nome = localStorageService.capitalizarNome(nome);
+	nome = await NomeCorrector.processar(nome);
 
-  if (nomesTemporarios.includes(nome)) {
-    document.getElementById("erroIntegracaoNomes").textContent =
-      "Este nome já foi adicionado";
-    document.getElementById("erroIntegracaoNomes").classList.remove("d-none");
-    return;
-  }
+	if (nomesTemporarios.includes(nome)) {
+		document.getElementById('erroIntegracaoNomes').textContent = 'Este nome já foi adicionado';
+		document.getElementById('erroIntegracaoNomes').classList.remove('d-none');
+		return;
+	}
 
-  document.getElementById("erroIntegracaoNomes").classList.add("d-none");
+	document.getElementById('erroIntegracaoNomes').classList.add('d-none');
 
-  nomesTemporarios.push(nome);
-  input.value = "";
-  input.focus();
+	nomesTemporarios.push(nome);
+	input.value = '';
+	input.focus();
 
-  _renderListaTemporaria();
+	_renderListaTemporaria();
 }
 
 function _renderListaTemporaria() {
-  const container = document.getElementById("listaNomesIntegracao");
-  container.innerHTML = "";
+	const container = document.getElementById('listaNomesIntegracao');
+	container.innerHTML = '';
 
-  if (!nomesTemporarios.length) {
-    container.innerHTML = `
+	if (!nomesTemporarios.length) {
+		container.innerHTML = `
       <div class="text-muted text-center fst-italic py-2">
         Nenhum nome adicionado
       </div>
     `;
-    return;
-  }
+		return;
+	}
 
-  nomesTemporarios.forEach((nome, index) => {
-    const item = document.createElement("div");
-    item.className =
-      "d-flex justify-content-between align-items-center py-1 px-2 rounded mb-1 bg-white border";
+	nomesTemporarios.forEach((nome, index) => {
+		const item = document.createElement('div');
+		item.className =
+			'd-flex justify-content-between align-items-center py-1 px-2 rounded mb-1 bg-white border';
 
-    item.innerHTML = `
+		item.innerHTML = `
       <span class="small">
         <i class="bi bi-person me-2 text-muted"></i>${nome}
       </span>
@@ -260,13 +254,13 @@ function _renderListaTemporaria() {
       </button>
     `;
 
-    item.querySelector("button").addEventListener("click", () => {
-      nomesTemporarios.splice(index, 1);
-      _renderListaTemporaria();
-    });
+		item.querySelector('button').addEventListener('click', () => {
+			nomesTemporarios.splice(index, 1);
+			_renderListaTemporaria();
+		});
 
-    container.appendChild(item);
-  });
+		container.appendChild(item);
+	});
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -274,73 +268,64 @@ function _renderListaTemporaria() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function abrirModalEditarIntegracao(idLocal) {
-  nomesTemporarios = [];
+	nomesTemporarios = [];
 
-  document.getElementById("inputNomeIntegracao").value = "";
-  document.getElementById("erroIntegracaoLocal").classList.add("d-none");
-  document.getElementById("erroIntegracaoNomes").classList.add("d-none");
+	document.getElementById('inputNomeIntegracao').value = '';
+	document.getElementById('erroIntegracaoLocal').classList.add('d-none');
+	document.getElementById('erroIntegracaoNomes').classList.add('d-none');
 
-  // Pré-seleciona e trava o local
-  _preencherLocaisSelect(idLocal);
-  const select = document.getElementById("selectLocalIntegracao");
-  select.disabled = true;
+	// Pré-seleciona e trava o local
+	_preencherLocaisSelect(idLocal);
+	const select = document.getElementById('selectLocalIntegracao');
+	select.disabled = true;
 
-  document.getElementById("modalIntegracaoTitulo").textContent =
-    "Editar Integração";
-  document.getElementById("btnSalvarIntegracao").onclick = () =>
-    salvarNomesNaIntegracao(idLocal);
+	document.getElementById('modalIntegracaoTitulo').textContent = 'Editar Integração';
+	document.getElementById('btnSalvarIntegracao').onclick = () => salvarNomesNaIntegracao(idLocal);
 
-  _renderListaTemporaria();
+	_renderListaTemporaria();
 
-  bootstrap.Modal.getOrCreateInstance(
-    document.getElementById("modalIntegracao"),
-  ).show();
+	bootstrap.Modal.getOrCreateInstance(document.getElementById('modalIntegracao')).show();
 }
 
 async function salvarNomesNaIntegracao(idLocal) {
-  const erroNomes = document.getElementById("erroIntegracaoNomes");
-  erroNomes.classList.add("d-none");
+	const erroNomes = document.getElementById('erroIntegracaoNomes');
+	erroNomes.classList.add('d-none');
 
-  if (!nomesTemporarios.length) {
-    erroNomes.textContent = "Adicione pelo menos um nome";
-    erroNomes.classList.remove("d-none");
-    return;
-  }
+	if (!nomesTemporarios.length) {
+		erroNomes.textContent = 'Adicione pelo menos um nome';
+		erroNomes.classList.remove('d-none');
+		return;
+	}
 
-  const btnSalvar = document.getElementById("btnSalvarIntegracao");
-  const textoOriginal = btnSalvar.innerHTML;
+	const btnSalvar = document.getElementById('btnSalvarIntegracao');
+	const textoOriginal = btnSalvar.innerHTML;
 
-  try {
-    _travarModal("modalIntegracao");
-    btnSalvar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Salvando...`;
+	try {
+		_travarModal('modalIntegracao');
+		btnSalvar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Salvando...`;
 
-    for (const nome of nomesTemporarios) {
-      const r = await integracoesService.criar(
-        { nome, id_local: idLocal },
-        senhaDigitada,
-      );
+		for (const nome of nomesTemporarios) {
+			const r = await integracoesService.criar({ nome, id_local: idLocal }, senhaDigitada);
 
-      if (r?.error) {
-        abrirModalAviso("Erro", `Erro ao salvar "${nome}": ${r.error}`);
-        return;
-      }
-    }
+			if (r?.error) {
+				abrirModalAviso('Erro', `Erro ao salvar "${nome}": ${r.error}`);
+				return;
+			}
+		}
 
-    bootstrap.Modal.getInstance(
-      document.getElementById("modalIntegracao"),
-    ).hide();
+		bootstrap.Modal.getInstance(document.getElementById('modalIntegracao')).hide();
 
-    abrirModalAviso("Sucesso", "Nomes adicionados com sucesso");
-    await carregarIntegracoes();
-  } catch (err) {
-    console.error(err);
-    abrirModalAviso("Erro", "Erro ao salvar nomes");
-  } finally {
-    _liberarModal("modalIntegracao");
-    btnSalvar.innerHTML = textoOriginal;
-    // Reabilita o select ao fechar
-    document.getElementById("selectLocalIntegracao").disabled = false;
-  }
+		abrirModalAviso('Sucesso', 'Nomes adicionados com sucesso');
+		await carregarIntegracoes();
+	} catch (err) {
+		console.error(err);
+		abrirModalAviso('Erro', 'Erro ao salvar nomes');
+	} finally {
+		_liberarModal('modalIntegracao');
+		btnSalvar.innerHTML = textoOriginal;
+		// Reabilita o select ao fechar
+		document.getElementById('selectLocalIntegracao').disabled = false;
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -348,80 +333,76 @@ async function salvarNomesNaIntegracao(idLocal) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function salvarIntegracao() {
-  const erroLocal = document.getElementById("erroIntegracaoLocal");
-  const erroNomes = document.getElementById("erroIntegracaoNomes");
-  erroLocal.classList.add("d-none");
-  erroNomes.classList.add("d-none");
+	const erroLocal = document.getElementById('erroIntegracaoLocal');
+	const erroNomes = document.getElementById('erroIntegracaoNomes');
+	erroLocal.classList.add('d-none');
+	erroNomes.classList.add('d-none');
 
-  const localId = Number(
-    document.getElementById("selectLocalIntegracao").value,
-  );
+	const localId = Number(document.getElementById('selectLocalIntegracao').value);
 
-  if (!localId) {
-    erroLocal.textContent = "Selecione um local";
-    erroLocal.classList.remove("d-none");
-    return;
-  }
+	if (!localId) {
+		erroLocal.textContent = 'Selecione um local';
+		erroLocal.classList.remove('d-none');
+		return;
+	}
 
-  if (!nomesTemporarios.length) {
-    erroNomes.textContent = "Adicione pelo menos um nome";
-    erroNomes.classList.remove("d-none");
-    return;
-  }
+	if (!nomesTemporarios.length) {
+		erroNomes.textContent = 'Adicione pelo menos um nome';
+		erroNomes.classList.remove('d-none');
+		return;
+	}
 
-  const btnSalvar = document.getElementById("btnSalvarIntegracao");
-  const textoOriginal = btnSalvar.innerHTML;
+	const btnSalvar = document.getElementById('btnSalvarIntegracao');
+	const textoOriginal = btnSalvar.innerHTML;
 
-  _travarModal("modalIntegracao");
-  btnSalvar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Salvando...`;
+	_travarModal('modalIntegracao');
+	btnSalvar.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Salvando...`;
 
-  try {
-    const signal = _getModalSignal("modalIntegracao");
+	try {
+		const signal = _getModalSignal('modalIntegracao');
 
-    for (const nome of nomesTemporarios) {
-      if (signal.aborted) return;
+		for (const nome of nomesTemporarios) {
+			if (signal.aborted) return;
 
-      const r = await integracoesService.criar(
-        { nome, id_local: localId },
-        senhaDigitada,
-        signal,
-      );
+			const r = await integracoesService.criar(
+				{ nome, id_local: localId },
+				senhaDigitada,
+				signal,
+			);
 
-      if (signal.aborted) return;
+			if (signal.aborted) return;
 
-      if (r?.error) {
-        abrirModalAviso("Erro", `Erro ao salvar "${nome}": ${r.error}`);
-        return;
-      }
-    }
+			if (r?.error) {
+				abrirModalAviso('Erro', `Erro ao salvar "${nome}": ${r.error}`);
+				return;
+			}
+		}
 
-    if (signal.aborted) return;
+		if (signal.aborted) return;
 
-    // Marcar local como tendo integração ativa
-    const rLocal = await locaisService.atualizar(
-      { id: localId, integracoes: "TRUE" },
-      senhaDigitada,
-      signal,
-    );
+		// Marcar local como tendo integração ativa
+		const rLocal = await locaisService.atualizar(
+			{ id: localId, integracoes: 'TRUE' },
+			senhaDigitada,
+			signal,
+		);
 
-    if (rLocal?.error) {
-      console.warn("Aviso ao atualizar local:", rLocal.error);
-    }
+		if (rLocal?.error) {
+			console.warn('Aviso ao atualizar local:', rLocal.error);
+		}
 
-    bootstrap.Modal.getInstance(
-      document.getElementById("modalIntegracao"),
-    ).hide();
+		bootstrap.Modal.getInstance(document.getElementById('modalIntegracao')).hide();
 
-    abrirModalAviso("Sucesso", "Integração criada com sucesso");
-    await carregarIntegracoes();
-  } catch (err) {
-    if (err?.name === "AbortError") return;
-    console.error(err);
-    abrirModalAviso("Erro", "Erro ao salvar integração");
-  } finally {
-    _liberarModal("modalIntegracao");
-    btnSalvar.innerHTML = textoOriginal;
-  }
+		abrirModalAviso('Sucesso', 'Integração criada com sucesso');
+		await carregarIntegracoes();
+	} catch (err) {
+		if (err?.name === 'AbortError') return;
+		console.error(err);
+		abrirModalAviso('Erro', 'Erro ao salvar integração');
+	} finally {
+		_liberarModal('modalIntegracao');
+		btnSalvar.innerHTML = textoOriginal;
+	}
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -429,122 +410,111 @@ async function salvarIntegracao() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function excluirNomeIntegracao(id, idLocal, btnTrash) {
-  document.getElementById("confirmTitle").innerText = "Excluir";
-  document.getElementById("confirmMessage").innerText =
-    "Deseja realmente excluir este nome da integração?";
+	document.getElementById('confirmTitle').innerText = 'Excluir';
+	document.getElementById('confirmMessage').innerText =
+		'Deseja realmente excluir este nome da integração?';
 
-  const btnOk = document.getElementById("confirmOk");
-  btnOk.onclick = null;
+	const btnOk = document.getElementById('confirmOk');
+	btnOk.onclick = null;
 
-  btnOk.onclick = async () => {
-    const textoOk = btnOk.innerHTML;
-    const textoTrash = btnTrash.innerHTML;
+	btnOk.onclick = async () => {
+		const textoOk = btnOk.innerHTML;
+		const textoTrash = btnTrash.innerHTML;
 
-    _travarModal("confirmModal");
-    try {
-      btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Excluindo`;
+		_travarModal('confirmModal');
+		try {
+			btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Excluindo`;
 
-      const signal = _getModalSignal("confirmModal");
-      const r = await integracoesService.excluir(id, senhaDigitada, signal);
+			const signal = _getModalSignal('confirmModal');
+			const r = await integracoesService.excluir(id, senhaDigitada, signal);
 
-      if (signal.aborted) return;
-      if (r?.error) {
-        abrirModalAviso("Erro", r.error);
-        return;
-      }
+			if (signal.aborted) return;
+			if (r?.error) {
+				abrirModalAviso('Erro', r.error);
+				return;
+			}
 
-      const nomesAtualizados = await integracoesService.listar();
-      dataStore.nomes_integracao = nomesAtualizados || [];
+			const nomesAtualizados = await integracoesService.listar();
+			dataStore.nomes_integracao = nomesAtualizados || [];
 
-      const aindaTemNomes = dataStore.nomes_integracao.some(
-        (n) => Number(n.id_local) === Number(idLocal),
-      );
+			const aindaTemNomes = dataStore.nomes_integracao.some(
+				(n) => Number(n.id_local) === Number(idLocal),
+			);
 
-      if (!aindaTemNomes) {
-        await locaisService.atualizar(
-          { id: idLocal, integracoes: "FALSE" },
-          senhaDigitada,
-        );
-      }
+			if (!aindaTemNomes) {
+				await locaisService.atualizar({ id: idLocal, integracoes: 'FALSE' }, senhaDigitada);
+			}
 
-      abrirModalAviso("Sucesso", "Nome excluído com sucesso");
-      renderizarIntegracoes(dataStore.nomes_integracao);
-    } catch (err) {
-      if (err?.name === "AbortError") return;
-      console.error(err);
-      abrirModalAviso("Erro", "Erro ao excluir nome");
-    } finally {
-      _liberarModal("confirmModal");
-      btnOk.innerHTML = textoOk;
-      btnTrash.innerHTML = textoTrash;
-      bootstrap.Modal.getInstance(
-        document.getElementById("confirmModal"),
-      ).hide();
-    }
-  };
+			abrirModalAviso('Sucesso', 'Nome excluído com sucesso');
+			renderizarIntegracoes(dataStore.nomes_integracao);
+		} catch (err) {
+			if (err?.name === 'AbortError') return;
+			console.error(err);
+			abrirModalAviso('Erro', 'Erro ao excluir nome');
+		} finally {
+			_liberarModal('confirmModal');
+			btnOk.innerHTML = textoOk;
+			btnTrash.innerHTML = textoTrash;
+			bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+		}
+	};
 
-  new bootstrap.Modal(document.getElementById("confirmModal")).show();
+	new bootstrap.Modal(document.getElementById('confirmModal')).show();
 }
 
 function excluirIntegracao(idLocal, btnTrash) {
-  document.getElementById("confirmTitle").innerText = "Excluir";
-  document.getElementById("confirmMessage").innerText =
-    "Deseja excluir TODOS os nomes desta integração?";
+	document.getElementById('confirmTitle').innerText = 'Excluir';
+	document.getElementById('confirmMessage').innerText =
+		'Deseja excluir TODOS os nomes desta integração?';
 
-  const btnOk = document.getElementById("confirmOk");
-  btnOk.onclick = null;
+	const btnOk = document.getElementById('confirmOk');
+	btnOk.onclick = null;
 
-  btnOk.onclick = async () => {
-    const textoOk = btnOk.innerHTML;
-    const textoTrash = btnTrash.innerHTML;
+	btnOk.onclick = async () => {
+		const textoOk = btnOk.innerHTML;
+		const textoTrash = btnTrash.innerHTML;
 
-    _travarModal("confirmModal");
+		_travarModal('confirmModal');
 
-    try {
-      btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Excluindo`;
-      btnTrash.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
-      btnTrash.disabled = true;
+		try {
+			btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Excluindo`;
+			btnTrash.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+			btnTrash.disabled = true;
 
-      const signal = _getModalSignal("confirmModal");
+			const signal = _getModalSignal('confirmModal');
 
-      const r = await integracoesService.excluirPorLocal(
-        idLocal,
-        senhaDigitada,
-        signal,
-      );
+			const r = await integracoesService.excluirPorLocal(idLocal, senhaDigitada, signal);
 
-      if (signal?.aborted) return;
+			if (signal?.aborted) return;
 
-      if (r?.error) {
-        abrirModalAviso("Erro", r.error);
-        return;
-      }
+			if (r?.error) {
+				abrirModalAviso('Erro', r.error);
+				return;
+			}
 
-      await locaisService.atualizar(
-        { id: idLocal, integracoes: "FALSE" },
-        senhaDigitada,
-        signal,
-      );
+			await locaisService.atualizar(
+				{ id: idLocal, integracoes: 'FALSE' },
+				senhaDigitada,
+				signal,
+			);
 
-      abrirModalAviso("Sucesso", "Integração excluída com sucesso");
-      await carregarIntegracoes();
-    } catch (err) {
-      if (err?.name === "AbortError") return;
-      console.error(err);
-      abrirModalAviso("Erro", "Erro ao excluir integração");
-    } finally {
-      _liberarModal("confirmModal");
-      btnOk.innerHTML = textoOk;
-      btnTrash.innerHTML = textoTrash;
-      btnTrash.disabled = false;
+			abrirModalAviso('Sucesso', 'Integração excluída com sucesso');
+			await carregarIntegracoes();
+		} catch (err) {
+			if (err?.name === 'AbortError') return;
+			console.error(err);
+			abrirModalAviso('Erro', 'Erro ao excluir integração');
+		} finally {
+			_liberarModal('confirmModal');
+			btnOk.innerHTML = textoOk;
+			btnTrash.innerHTML = textoTrash;
+			btnTrash.disabled = false;
 
-      bootstrap.Modal.getInstance(
-        document.getElementById("confirmModal"),
-      ).hide();
-    }
-  };
+			bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+		}
+	};
 
-  new bootstrap.Modal(document.getElementById("confirmModal")).show();
+	new bootstrap.Modal(document.getElementById('confirmModal')).show();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -553,8 +523,8 @@ function excluirIntegracao(idLocal, btnTrash) {
 
 // Delegados ao sistema central travarUI/liberarUI
 function desabilitarBotoesIntegracoes() {
-  travarUI();
+	travarUI();
 }
 function habilitarBotoesIntegracoes() {
-  liberarUI();
+	liberarUI();
 }

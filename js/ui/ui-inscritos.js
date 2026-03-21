@@ -5,30 +5,28 @@ let estruturaInscritos = {};
 ========================= */
 
 function renderAccordionInscritos(grupos) {
-  const { locaisMap, programacaoMap, instrumentosMap } = estruturaInscritos;
+	const { locaisMap, programacaoMap, instrumentosMap } = estruturaInscritos;
 
-  let html = '<div class="accordion" id="accordionInscritos">';
-  let index = 0;
+	let html = '<div class="accordion" id="accordionInscritos">';
+	let index = 0;
 
-  Object.entries(grupos).forEach(([local, programacoes]) => {
-    const pidsValidos = Object.keys(programacoes).filter(
-      (pid) => programacaoMap[pid]
-    );
+	Object.entries(grupos).forEach(([local, programacoes]) => {
+		const pidsValidos = Object.keys(programacoes).filter((pid) => programacaoMap[pid]);
 
-    if (pidsValidos.length === 0) {
-      console.warn("Nenhuma programação válida nesse grupo:", local);
-      return;
-    }
+		if (pidsValidos.length === 0) {
+			console.warn('Nenhuma programação válida nesse grupo:', local);
+			return;
+		}
 
-    const currentIndex = index;
-    const pRef = programacaoMap[pidsValidos[0]];
-    const localObj = locaisMap[pRef.local_id];
+		const currentIndex = index;
+		const pRef = programacaoMap[pidsValidos[0]];
+		const localObj = locaisMap[pRef.local_id];
 
-    if (!localObj) {
-      console.warn("Local não encontrado:", pRef.local_id);
-    }
+		if (!localObj) {
+			console.warn('Local não encontrado:', pRef.local_id);
+		}
 
-    html += `
+		html += `
       <div class="accordion-item border-dark">
 
         <h2 class="accordion-header" id="heading-${currentIndex}">
@@ -48,17 +46,17 @@ function renderAccordionInscritos(grupos) {
             data-localid="${pRef.local_id}"
             title="Copiar endereço e abrir mapa">
             <i class="bi bi-geo-alt-fill me-1"></i>
-            ${localObj?.endereco ?? "Endereço não informado"}
+            ${localObj?.endereco ?? 'Endereço não informado'}
           </p>
 
           <div class="accordion-body bg-light">
     `;
 
-    pidsValidos.forEach((pid) => {
-      const inscritosLista = programacoes[pid];
-      const p = programacaoMap[pid];
+		pidsValidos.forEach((pid) => {
+			const inscritosLista = programacoes[pid];
+			const p = programacaoMap[pid];
 
-      html += `
+			html += `
         <div class="card mb-3 border-dark">
           <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center gap-2 py-3">
             <div class="text-start">
@@ -80,15 +78,12 @@ function renderAccordionInscritos(grupos) {
           <ul class="list-group list-group-flush">
       `;
 
-      inscritosLista.forEach((i) => {
-        const auth = localStorageService.buscarAutorizacao(i.id);
+			inscritosLista.forEach((i) => {
+				const auth = localStorageService.buscarAutorizacao(i.id);
 
-        const instNome = instrumentosService.obterNomeInstrumento(
-          i,
-          instrumentosMap
-        );
+				const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
 
-        html += `
+				html += `
           <li class="list-group-item d-flex justify-content-between align-items-center gap-2 py-3">
             <span class="d-flex flex-column align-items-start">
               <span class="fw-semibold">${i.nome}</span>
@@ -96,39 +91,39 @@ function renderAccordionInscritos(grupos) {
             </span>
 
             ${
-              auth
-                ? `<button class="btn btn-sm btn-outline-danger"
+				auth
+					? `<button class="btn btn-sm btn-outline-danger"
                     onclick="excluirInscricao(${i.id}, this)">
                     <i class="bi bi-trash"></i>
                   </button>`
-                : ""
-            }
+					: ''
+			}
           </li>
         `;
-      });
+			});
 
-      html += `</ul></div>`;
-    });
+			html += `</ul></div>`;
+		});
 
-    html += `
+		html += `
           </div>
         </div>
       </div>
     `;
 
-    index++;
-  });
+		index++;
+	});
 
-  if (index === 0) {
-    conteudo.innerHTML = `
+	if (index === 0) {
+		conteudo.innerHTML = `
       <div class="alert alert-secondary text-center">
         Nenhuma programação válida encontrada
       </div>`;
-    return;
-  }
+		return;
+	}
 
-  html += "</div>";
-  conteudo.innerHTML = html;
+	html += '</div>';
+	conteudo.innerHTML = html;
 }
 
 /* =========================
@@ -136,48 +131,48 @@ function renderAccordionInscritos(grupos) {
 ========================= */
 
 async function showInscritos() {
-  setTitle("Inscrições");
+	setTitle('Inscrições');
 
-  conteudo.innerHTML = `
+	conteudo.innerHTML = `
     <div class="spinner-border text-dark" role="status">
       <span class="visually-hidden">Carregando...</span>
     </div>`;
 
-  travarUI();
+	travarUI();
 
-  try {
-    const inscritos = (await inscricoesService.listar()) || [];
+	try {
+		const inscritos = (await inscricoesService.listar()) || [];
 
-    dataStore.inscritos = inscritos;
+		dataStore.inscritos = inscritos;
 
-    if (!inscritos.length) {
-      conteudo.innerHTML = `
+		if (!inscritos.length) {
+			conteudo.innerHTML = `
         <div class="alert alert-secondary text-center">
           Nenhuma inscrição encontrada
         </div>`;
-      return;
-    }
+			return;
+		}
 
-    estruturaInscritos = inscricoesService.montarEstrutura(
-      inscritos,
-      dataStore.locais,
-      dataStore.programacao,
-      dataStore.instrumentos || []
-    );
+		estruturaInscritos = inscricoesService.montarEstrutura(
+			inscritos,
+			dataStore.locais,
+			dataStore.programacao,
+			dataStore.instrumentos || [],
+		);
 
-    renderAccordionInscritos(estruturaInscritos.grupos);
+		renderAccordionInscritos(estruturaInscritos.grupos);
 
-    copiarTexto(conteudo);
-  } catch (err) {
-    console.error(err);
+		copiarTexto(conteudo);
+	} catch (err) {
+		console.error(err);
 
-    conteudo.innerHTML = `
+		conteudo.innerHTML = `
       <div class="alert alert-dark text-center">
         Erro ao carregar inscrições
       </div>`;
-  } finally {
-    liberarUI();
-  }
+	} finally {
+		liberarUI();
+	}
 }
 
 /* =========================
@@ -185,50 +180,39 @@ async function showInscritos() {
 ========================= */
 
 function compartilhar(pid) {
-  const {
-    locaisMap,
-    programacaoMap,
-    instrumentosMap,
-    inscritosPorProgramacao,
-  } = estruturaInscritos;
+	const { locaisMap, programacaoMap, instrumentosMap, inscritosPorProgramacao } =
+		estruturaInscritos;
 
-  const p = programacaoMap[pid];
-  if (!p) {
-    abrirModalAviso("Erro", "Programação não encontrada");
-    return;
-  }
+	const p = programacaoMap[pid];
+	if (!p) {
+		abrirModalAviso('Erro', 'Programação não encontrada');
+		return;
+	}
 
-  const localObj = locaisMap[p.local_id];
-  if (!localObj) {
-    abrirModalAviso("Erro", "Local não encontrado");
-    return;
-  }
+	const localObj = locaisMap[p.local_id];
+	if (!localObj) {
+		abrirModalAviso('Erro', 'Local não encontrado');
+		return;
+	}
 
-  const inscritosProg = inscritosPorProgramacao[pid] || [];
+	const inscritosProg = inscritosPorProgramacao[pid] || [];
 
-  const dataFormatada = new Date(p.data).toLocaleDateString("pt-BR");
+	const dataFormatada = new Date(p.data).toLocaleDateString('pt-BR');
 
-  let mensagem = `*${localObj.nome}*\n\n`;
-  mensagem += ` _${localObj.endereco}_\n`;
-  mensagem += ` *${p.tipo_visita}*\n`;
-  mensagem += ` ${dataFormatada}\n`;
-  mensagem += ` ${formatarHorario(p.horario)}\n\n`;
-  mensagem += `*Inscritos(${inscritosProg.length}/${localObj.limite}):*\n`;
+	let mensagem = `*${localObj.nome}*\n\n`;
+	mensagem += ` _${localObj.endereco}_\n`;
+	mensagem += ` *${p.tipo_visita}*\n`;
+	mensagem += ` ${dataFormatada}\n`;
+	mensagem += ` ${formatarHorario(p.horario)}\n\n`;
+	mensagem += `*Inscritos(${inscritosProg.length}/${localObj.limite}):*\n`;
 
-  inscritosProg.forEach((i) => {
-    const instNome = instrumentosService.obterNomeInstrumento(
-      i,
-      instrumentosMap
-    );
+	inscritosProg.forEach((i) => {
+		const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
 
-    mensagem += `• ${i.nome} _(${instNome})_\n`;
-  });
+		mensagem += `• ${i.nome} _(${instNome})_\n`;
+	});
 
-  mensagem = encodeURIComponent(mensagem);
+	mensagem = encodeURIComponent(mensagem);
 
-  window.open(
-    `https://wa.me/?text=${mensagem}`,
-    "_blank",
-    "noopener,noreferrer"
-  );
+	window.open(`https://wa.me/?text=${mensagem}`, '_blank', 'noopener,noreferrer');
 }

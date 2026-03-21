@@ -1,222 +1,205 @@
 <section class="container my-4">
-  <div class="card shadow-sm border-0">
-    <div class="card-header bg-dark text-white d-flex align-items-center gap-2">
-      <i class="bi bi-clipboard-check fs-5"></i>
-      <h5 class="mb-0">Relatório de Atendimento</h5>
-    </div>
+	<div class="card shadow-sm border-0">
+		<div class="card-header bg-dark text-white d-flex align-items-center gap-2">
+			<i class="bi bi-clipboard-check fs-5"></i>
+			<h5 class="mb-0">Relatório de Atendimento</h5>
+		</div>
 
-    <div class="card-body">
-      <label class="form-label fw-semibold">
-        <i class="bi bi-geo-alt me-1"></i> Local
-      </label>
+		<div class="card-body">
+			<label class="form-label fw-semibold"> <i class="bi bi-geo-alt me-1"></i> Local </label>
 
-      <form id="formRelatorio" class="row g-2 justify-content-center">
-        <!-- WRAPPER DE LARGURA -->
-        <div class="col-12 col-xl-10">
-          <!-- LOCAL SELECIONADO (RESUMO) -->
-          <div id="localSelecionadoHeader" class="d-none mb-1">
-            <button
-              id="btnToggleLocais"
-              class="btn btn-dark w-100 d-flex justify-content-between align-items-center"
-              type="button"
-            >
-              <span id="localSelecionadoNome"></span>
-              <i class="bi bi-chevron-down"></i>
-            </button>
-          </div>
+			<form id="formRelatorio" class="row g-2 justify-content-center">
+				<!-- WRAPPER DE LARGURA -->
+				<div class="col-12 col-xl-10">
+					<!-- LOCAL SELECIONADO (RESUMO) -->
+					<div id="localSelecionadoHeader" class="d-none mb-1">
+						<button
+							id="btnToggleLocais"
+							class="btn btn-dark w-100 d-flex justify-content-between align-items-center"
+							type="button"
+						>
+							<span id="localSelecionadoNome"></span>
+							<i class="bi bi-chevron-down"></i>
+						</button>
+					</div>
 
-          <!-- LISTA DE LOCAIS -->
-          <div id="collapseLocais" class="mb-1">
-            <div
-              id="listaLocais"
-              class="list-group border rounded overflow-hidden"
-            >
-              <!-- Gerado via JS -->
-            </div>
-          </div>
+					<!-- LISTA DE LOCAIS -->
+					<div id="collapseLocais" class="mb-1">
+						<div id="listaLocais" class="list-group border rounded overflow-hidden">
+							<!-- Gerado via JS -->
+						</div>
+					</div>
 
-          <input type="hidden" id="localSelecionado" required />
+					<input type="hidden" id="localSelecionado" required />
 
-          <!-- PROGRAMAÇÃO -->
-          <div class="col-12">
-            <label class="form-label fw-semibold mb-1">
-              <i class="bi bi-calendar-event me-1"></i> Programação
-            </label>
+					<!-- PROGRAMAÇÃO -->
+					<div class="col-12">
+						<label class="form-label fw-semibold mb-1">
+							<i class="bi bi-calendar-event me-1"></i> Programação
+						</label>
 
-            <div id="listaProgramacoes" class="row g-2">
-              <div class="col-12">
-                <div class="alert alert-secondary py-1 mb-0 small">
-                  Selecione um local para carregar as programações
-                </div>
-              </div>
-            </div>
+						<div id="listaProgramacoes" class="row g-2">
+							<div class="col-12">
+								<div class="alert alert-secondary py-1 mb-0 small">
+									Selecione um local para carregar as programações
+								</div>
+							</div>
+						</div>
 
-            <input type="hidden" id="programacaoSelecionada" required />
-          </div>
+						<input type="hidden" id="programacaoSelecionada" required />
+					</div>
 
-          <!-- DATA / RESPONSÁVEL -->
-          <div class="row g-2 mt-1">
-            <div class="col-md-6">
-              <label class="form-label fw-semibold small">
-                <i class="bi bi-calendar-date me-1"></i> Data
-              </label>
-              <input
-                type="date"
-                id="dataRelatorio"
-                class="form-control"
-                readonly
-              />
-            </div>
+					<!-- DATA / RESPONSÁVEL -->
+					<div class="row g-2 mt-1">
+						<div class="col-md-6">
+							<label class="form-label fw-semibold small">
+								<i class="bi bi-calendar-date me-1"></i> Data
+							</label>
+							<input type="date" id="dataRelatorio" class="form-control" readonly />
+						</div>
 
-            <div class="col-md-6">
-              <label class="form-label fw-semibold small">
-                <i class="bi bi-person-badge me-1"></i> Responsável
-              </label>
-              <input
-                type="text"
-                id="responsavel"
-                class="form-control"
-                placeholder="Nome do responsável"
-                data-input-filter="nome"
-                required
-              />
-            </div>
-          </div>
+						<div class="col-md-6">
+							<label class="form-label fw-semibold small">
+								<i class="bi bi-person-badge me-1"></i> Responsável
+							</label>
+							<input
+								type="text"
+								id="responsavel"
+								class="form-control"
+								placeholder="Nome do responsável"
+								data-input-filter="nome"
+								required
+							/>
+						</div>
+					</div>
 
-          <!-- OBSERVAÇÕES -->
-          <div class="col-12 mt-1">
-            <label class="form-label fw-semibold small">
-              <i class="bi bi-chat-text me-1"></i> Observações
-            </label>
-            <textarea
-              id="observacoes"
-              rows="4"
-              class="form-control"
-              placeholder="Observações adicionais"
-            ></textarea>
-          </div>
+					<!-- OBSERVAÇÕES -->
+					<div class="col-12 mt-1">
+						<label class="form-label fw-semibold small">
+							<i class="bi bi-chat-text me-1"></i> Observações
+						</label>
+						<textarea
+							id="observacoes"
+							rows="4"
+							class="form-control"
+							placeholder="Observações adicionais"
+						></textarea>
+					</div>
 
-          <!-- QTDE INTERNOS + QTDE MÚSICOS + COLABORADORES -->
-          <div class="row g-2 mt-4">
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">
-                <i class="bi bi-person-fill me-1"></i> Qtde. Internos
-              </label>
-              <input
-                type="number"
-                id="qtdInternos"
-                class="form-control"
-                min="0"
-                data-input-filter="numero"
-              />
-              <div class="form-text">Quantidade de internos no local</div>
-            </div>
+					<!-- QTDE INTERNOS + QTDE MÚSICOS + COLABORADORES -->
+					<div class="row g-2 mt-4">
+						<div class="col-md-4">
+							<label class="form-label fw-semibold">
+								<i class="bi bi-person-fill me-1"></i> Qtde. Internos
+							</label>
+							<input
+								type="number"
+								id="qtdInternos"
+								class="form-control"
+								min="0"
+								data-input-filter="numero"
+							/>
+							<div class="form-text">Quantidade de internos no local</div>
+						</div>
 
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">
-                <i class="bi bi-music-note-beamed me-1"></i> Qtde. Músicos
-              </label>
-              <input
-                type="number"
-                id="qtdMusicos"
-                class="form-control"
-                min="0"
-                data-input-filter="numero"
-              />
-              <div class="form-text">Quantidade de músicos no local</div>
-            </div>
+						<div class="col-md-4">
+							<label class="form-label fw-semibold">
+								<i class="bi bi-music-note-beamed me-1"></i> Qtde. Músicos
+							</label>
+							<input
+								type="number"
+								id="qtdMusicos"
+								class="form-control"
+								min="0"
+								data-input-filter="numero"
+							/>
+							<div class="form-text">Quantidade de músicos no local</div>
+						</div>
 
-            <div class="col-md-4">
-              <label class="form-label fw-semibold">
-                <i class="bi bi-people-fill me-1"></i> Qtde. Colaboradores
-              </label>
-              <input
-                type="number"
-                id="qtdColaboradores"
-                class="form-control"
-                min="0"
-                data-input-filter="numero"
-              />
-              <div class="form-text">
-                Quantidade de colaboradores DARPE no local
-              </div>
-            </div>
-          </div>
+						<div class="col-md-4">
+							<label class="form-label fw-semibold">
+								<i class="bi bi-people-fill me-1"></i> Qtde. Colaboradores
+							</label>
+							<input
+								type="number"
+								id="qtdColaboradores"
+								class="form-control"
+								min="0"
+								data-input-filter="numero"
+							/>
+							<div class="form-text">Quantidade de colaboradores DARPE no local</div>
+						</div>
+					</div>
 
-          <!-- CAMPOS EVANGELIZAÇÃO -->
-          <div
-            class="row d-none justify-content-center mt-4"
-            id="camposEvangelizacao"
-          >
-            <div class="col-12 col-md-8 col-lg-6">
-              <div class="card border-warning shadow-sm">
-                <div
-                  class="card-header bg-warning-subtle fw-semibold text-center"
-                >
-                  <i class="bi bi-megaphone me-1"></i>
-                  Informações da Evangelização
-                </div>
+					<!-- CAMPOS EVANGELIZAÇÃO -->
+					<div class="row d-none justify-content-center mt-4" id="camposEvangelizacao">
+						<div class="col-12 col-md-8 col-lg-6">
+							<div class="card border-warning shadow-sm">
+								<div class="card-header bg-warning-subtle fw-semibold text-center">
+									<i class="bi bi-megaphone me-1"></i>
+									Informações da Evangelização
+								</div>
 
-                <div class="card-body">
-                  <p class="text-muted small mb-3 text-center">
-                    Os dados serão utilizados exclusivamente no relatório.
-                  </p>
+								<div class="card-body">
+									<p class="text-muted small mb-3 text-center">
+										Os dados serão utilizados exclusivamente no relatório.
+									</p>
 
-                  <div class="row g-3 justify-content-center">
-                    <div class="col-12">
-                      <label class="form-label">
-                        <i class="bi bi-book"></i> Palavra
-                      </label>
-                      <input
-                        type="text"
-                        id="palavra"
-                        class="form-control text-center"
-                        placeholder="Ex: João 3:16–21"
-                        data-input-filter="biblia"
-                      />
-                      <div class="form-text text-center">
-                        Informe o livro, capítulo e versículos.
-                        <br />
-                        (Se não houve palavra, deixe em branco)
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+									<div class="row g-3 justify-content-center">
+										<div class="col-12">
+											<label class="form-label">
+												<i class="bi bi-book"></i> Palavra
+											</label>
+											<input
+												type="text"
+												id="palavra"
+												class="form-control text-center"
+												placeholder="Ex: João 3:16–21"
+												data-input-filter="biblia"
+											/>
+											<div class="form-text text-center">
+												Informe o livro, capítulo e versículos.
+												<br />
+												(Se não houve palavra, deixe em branco)
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 
-          <!-- MÚSICOS -->
-          <div class="col-12 mt-3">
-            <label class="form-label fw-semibold">
-              <i class="bi bi-people me-1"></i> Nome/Instrumentos dos Músicos
-            </label>
+					<!-- MÚSICOS -->
+					<div class="col-12 mt-3">
+						<label class="form-label fw-semibold">
+							<i class="bi bi-people me-1"></i> Nome/Instrumentos dos Músicos
+						</label>
 
-            <div
-              id="listaMusicos"
-              class="border rounded p-3 bg-body-secondary small hover-shadow"
-              style="cursor: pointer"
-            ></div>
-          </div>
+						<div
+							id="listaMusicos"
+							class="border rounded p-3 bg-body-secondary small hover-shadow"
+							style="cursor: pointer"
+						></div>
+					</div>
 
-          <!-- AÇÕES -->
-          <div
-            class="col-12 d-flex flex-wrap gap-2 justify-content-center justify-content-md-end mt-3"
-          >
-            <button type="button" class="btn btn-primary" onclick="gerarPDF()">
-              <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
-            </button>
+					<!-- AÇÕES -->
+					<div
+						class="col-12 d-flex flex-wrap gap-2 justify-content-center justify-content-md-end mt-3"
+					>
+						<button type="button" class="btn btn-primary" onclick="gerarPDF()">
+							<i class="bi bi-file-earmark-pdf"></i> Gerar PDF
+						</button>
 
-            <button
-              type="button"
-              class="btn btn-success"
-              onclick="enviarWhatsAppRelatorio()"
-            >
-              <i class="bi bi-whatsapp"></i> Compartilhar
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+						<button
+							type="button"
+							class="btn btn-success"
+							onclick="enviarWhatsAppRelatorio()"
+						>
+							<i class="bi bi-whatsapp"></i> Compartilhar
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
 </section>

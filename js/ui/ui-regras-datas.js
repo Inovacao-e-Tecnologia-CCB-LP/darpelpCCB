@@ -3,76 +3,72 @@
 ========================= */
 
 async function abrirTelaRegrasDatas() {
-  setTitle("Regras de Datas");
-  conteudo.innerHTML = Ui.PainelRegrasDatas();
-  carregarRegrasDatas((firstTime = true));
+	setTitle('Regras de Datas');
+	conteudo.innerHTML = Ui.PainelRegrasDatas();
+	carregarRegrasDatas((firstTime = true));
 }
 
 /* =========================
    LISTAGEM
 ========================= */
 async function carregarRegrasDatas(firstTime = false) {
-  const lista = document.getElementById("listaRegrasDatas");
+	const lista = document.getElementById('listaRegrasDatas');
 
-  travarUI();
-  try {
-    mostrarLoading("listaRegrasDatas");
+	travarUI();
+	try {
+		mostrarLoading('listaRegrasDatas');
 
-    const data = firstTime
-      ? dataStore.regrasData
-      : await regrasDatasService.listar();
-    let regras = data || [];
-    dataStore.regrasData = regras;
+		const data = firstTime ? dataStore.regrasData : await regrasDatasService.listar();
+		let regras = data || [];
+		dataStore.regrasData = regras;
 
-    if (!regras.length) {
-      lista.innerHTML = `
+		if (!regras.length) {
+			lista.innerHTML = `
         <div class="alert alert-secondary text-center">
           Nenhuma regra cadastrada
         </div>
       `;
-      return;
-    }
+			return;
+		}
 
-    // Ordenação: Local (A-Z) e depois Dia da Semana
-    regras.sort((a, b) => {
-      const localA =
-        dataStore.locais.find((l) => l.id == a.local_id)?.nome || "";
-      const localB =
-        dataStore.locais.find((l) => l.id == b.local_id)?.nome || "";
-      return localA.localeCompare(localB) || a.dia_semana - b.dia_semana;
-    });
+		// Ordenação: Local (A-Z) e depois Dia da Semana
+		regras.sort((a, b) => {
+			const localA = dataStore.locais.find((l) => l.id == a.local_id)?.nome || '';
+			const localB = dataStore.locais.find((l) => l.id == b.local_id)?.nome || '';
+			return localA.localeCompare(localB) || a.dia_semana - b.dia_semana;
+		});
 
-    renderCardsRegrasDatas(regras);
-  } catch (err) {
-    console.error(err);
-    lista.innerHTML = `
+		renderCardsRegrasDatas(regras);
+	} catch (err) {
+		console.error(err);
+		lista.innerHTML = `
       <div class="alert alert-danger text-center">
         Erro ao carregar regras
       </div>
     `;
-  } finally {
-    liberarUI();
-  }
+	} finally {
+		liberarUI();
+	}
 }
 
 function renderTabelaRegrasDatas(regras) {
-  renderCardsRegrasDatas(regras);
+	renderCardsRegrasDatas(regras);
 }
 
 function renderCardsRegrasDatas(regras) {
-  // Agrupar por local para visual mais limpo
-  const porLocal = {};
-  regras.forEach((r) => {
-    const local = dataStore.locais.find((l) => l.id == r.local_id);
-    const nomeLocal = local ? local.nome : "Local excluído";
-    if (!porLocal[nomeLocal]) porLocal[nomeLocal] = [];
-    porLocal[nomeLocal].push(r);
-  });
+	// Agrupar por local para visual mais limpo
+	const porLocal = {};
+	regras.forEach((r) => {
+		const local = dataStore.locais.find((l) => l.id == r.local_id);
+		const nomeLocal = local ? local.nome : 'Local excluído';
+		if (!porLocal[nomeLocal]) porLocal[nomeLocal] = [];
+		porLocal[nomeLocal].push(r);
+	});
 
-  let html = '<div class="d-flex flex-column gap-4">';
+	let html = '<div class="d-flex flex-column gap-4">';
 
-  Object.entries(porLocal).forEach(([nomeLocal, itens]) => {
-    html += `
+	Object.entries(porLocal).forEach(([nomeLocal, itens]) => {
+		html += `
       <div class="grupo-secao">
         <div class="grupo-secao-header">
           <i class="bi bi-geo-alt-fill"></i>
@@ -81,12 +77,12 @@ function renderCardsRegrasDatas(regras) {
         </div>
         <div class="d-flex flex-column gap-2">`;
 
-    itens.forEach((r) => {
-      const ativoEl = r.ativo
-        ? `<span class="status-dot status-dot-ok"></span>`
-        : `<span class="status-dot status-dot-no"></span>`;
+		itens.forEach((r) => {
+			const ativoEl = r.ativo
+				? `<span class="status-dot status-dot-ok"></span>`
+				: `<span class="status-dot status-dot-no"></span>`;
 
-      html += `
+			html += `
           <div class="item-card">
             <div class="item-card-body">
               <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
@@ -115,13 +111,13 @@ function renderCardsRegrasDatas(regras) {
               </div>
             </div>
           </div>`;
-    });
+		});
 
-    html += "</div></div>";
-  });
+		html += '</div></div>';
+	});
 
-  html += "</div>";
-  document.getElementById("listaRegrasDatas").innerHTML = html;
+	html += '</div>';
+	document.getElementById('listaRegrasDatas').innerHTML = html;
 }
 
 /* =========================
@@ -129,75 +125,61 @@ function renderCardsRegrasDatas(regras) {
 ========================= */
 
 function montarPayloadRegra() {
-  const id = document.getElementById("regraId").value;
-  const localId = document.getElementById("regraLocal").value;
-  const tipo = document.getElementById("regraTipo").value.trim();
-  const dia = document.getElementById("regraDiaSemana").value;
-  const ordinal = document.getElementById("regraOrdinal").value;
-  const horario = document.getElementById("regraHorario").value;
-  const ativo = document.getElementById("regraAtivo").checked;
+	const id = document.getElementById('regraId').value;
+	const localId = document.getElementById('regraLocal').value;
+	const tipo = document.getElementById('regraTipo').value.trim();
+	const dia = document.getElementById('regraDiaSemana').value;
+	const ordinal = document.getElementById('regraOrdinal').value;
+	const horario = document.getElementById('regraHorario').value;
+	const ativo = document.getElementById('regraAtivo').checked;
 
-  if (!localId || !tipo || !horario) {
-    mostrarErroCampo(
-      "erroValidacaoCamposRegra",
-      "Preencha todos os campos corretamente",
-    );
-    return null;
-  }
+	if (!localId || !tipo || !horario) {
+		mostrarErroCampo('erroValidacaoCamposRegra', 'Preencha todos os campos corretamente');
+		return null;
+	}
 
-  return {
-    id: id ? Number(id) : null,
-    local_id: Number(localId),
-    tipo_visita: tipo,
-    dia_semana: Number(dia),
-    ordinal: Number(ordinal),
-    horario: String(horario),
-    ativo: ativo,
-  };
+	return {
+		id: id ? Number(id) : null,
+		local_id: Number(localId),
+		tipo_visita: tipo,
+		dia_semana: Number(dia),
+		ordinal: Number(ordinal),
+		horario: String(horario),
+		ativo: ativo,
+	};
 }
 
 function preencherFormularioRegra(regra) {
-  document.getElementById("regraId").value = regra.id;
-  document.getElementById("regraTipo").value = regra.tipo_visita;
-  document.getElementById("regraDiaSemana").value = regra.dia_semana;
-  document.getElementById("regraOrdinal").value = regra.ordinal;
-  document.getElementById("regraHorario").value = formatarHorario(
-    regra.horario,
-  );
-  document.getElementById("regraAtivo").checked = regra.ativo;
+	document.getElementById('regraId').value = regra.id;
+	document.getElementById('regraTipo').value = regra.tipo_visita;
+	document.getElementById('regraDiaSemana').value = regra.dia_semana;
+	document.getElementById('regraOrdinal').value = regra.ordinal;
+	document.getElementById('regraHorario').value = formatarHorario(regra.horario);
+	document.getElementById('regraAtivo').checked = regra.ativo;
 
-  const selectLocal = document.getElementById("regraLocal");
-  selectLocal.innerHTML = '<option value="">Selecione o local</option>';
-  dataStore.locais.forEach((l) => {
-    const opt = document.createElement("option");
-    opt.value = l.id;
-    opt.text = l.nome;
-    if (Number(l.id) === Number(regra.local_id)) opt.selected = true;
-    selectLocal.appendChild(opt);
-  });
+	const selectLocal = document.getElementById('regraLocal');
+	selectLocal.innerHTML = '<option value="">Selecione o local</option>';
+	dataStore.locais.forEach((l) => {
+		const opt = document.createElement('option');
+		opt.value = l.id;
+		opt.text = l.nome;
+		if (Number(l.id) === Number(regra.local_id)) opt.selected = true;
+		selectLocal.appendChild(opt);
+	});
 }
 
 function formatarQuando(dia, ordinal) {
-  const dias = [
-    "",
-    "Domingo",
-    "Segunda",
-    "Terça",
-    "Quarta",
-    "Quinta",
-    "Sexta",
-    "Sábado",
-  ];
-  const nomeDia = dias[dia] || "Dia?";
-  if (Number(ordinal) === 0) return `Todas(os): ${nomeDia}`;
-  if (Number(ordinal) === -1) return `Última(o) ${nomeDia}`;
-  return `${ordinal}ª ${nomeDia}`;
+	const dias = ['', 'Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+	const nomeDia = dias[dia] || 'Dia?';
+	if (Number(ordinal) === 0) return `Todas(os): ${nomeDia}`;
+	if (Number(ordinal) === -1) return `Última(o) ${nomeDia}`;
+	return `${ordinal}ª ${nomeDia}`;
 }
 
 async function reloadRegras() {
-  mostrarLoading("listaRegrasDatas");
-  await carregarProgramacao();
-  await carregarRegrasDatas();
+	mostrarLoading('listaRegrasDatas');
+	await carregarProgramacao();
+	await carregarRegrasDatas();
 }
 
 /* =========================
@@ -205,32 +187,32 @@ async function reloadRegras() {
 ========================= */
 
 function abrirModalNovaRegra() {
-  limparErroCampo("erroValidacaoCamposRegra");
+	limparErroCampo('erroValidacaoCamposRegra');
 
-  document.getElementById("modalRegraTitulo").innerText = "Nova Regra";
-  limparFormularioRegra();
+	document.getElementById('modalRegraTitulo').innerText = 'Nova Regra';
+	limparFormularioRegra();
 
-  // Popular select de locais no novo registro
-  const selectLocal = document.getElementById("regraLocal");
-  selectLocal.innerHTML = '<option value="">Selecione o local</option>';
-  dataStore.locais.forEach((l) => {
-    const opt = document.createElement("option");
-    opt.value = l.id;
-    opt.text = l.nome;
-    selectLocal.appendChild(opt);
-  });
+	// Popular select de locais no novo registro
+	const selectLocal = document.getElementById('regraLocal');
+	selectLocal.innerHTML = '<option value="">Selecione o local</option>';
+	dataStore.locais.forEach((l) => {
+		const opt = document.createElement('option');
+		opt.value = l.id;
+		opt.text = l.nome;
+		selectLocal.appendChild(opt);
+	});
 
-  document.getElementById("btnSalvarRegra").onclick = salvarRegra;
-  new bootstrap.Modal(document.getElementById("modalRegra")).show();
+	document.getElementById('btnSalvarRegra').onclick = salvarRegra;
+	new bootstrap.Modal(document.getElementById('modalRegra')).show();
 }
 
 function limparFormularioRegra() {
-  document.getElementById("regraId").value = "";
-  document.getElementById("regraTipo").value = "";
-  document.getElementById("regraDiaSemana").value = "1";
-  document.getElementById("regraOrdinal").value = "0";
-  document.getElementById("regraHorario").value = "";
-  document.getElementById("regraAtivo").checked = true;
+	document.getElementById('regraId').value = '';
+	document.getElementById('regraTipo').value = '';
+	document.getElementById('regraDiaSemana').value = '1';
+	document.getElementById('regraOrdinal').value = '0';
+	document.getElementById('regraHorario').value = '';
+	document.getElementById('regraAtivo').checked = true;
 }
 
 /* =========================
@@ -238,49 +220,47 @@ function limparFormularioRegra() {
 ========================= */
 
 async function salvarRegra() {
-  limparErroCampo("erroValidacaoCamposRegra");
+	limparErroCampo('erroValidacaoCamposRegra');
 
-  const btn = document.getElementById("btnSalvarRegra");
-  const textoOriginal = btn.innerHTML;
+	const btn = document.getElementById('btnSalvarRegra');
+	const textoOriginal = btn.innerHTML;
 
-  const payload = montarPayloadRegra();
-  if (!payload) return;
+	const payload = montarPayloadRegra();
+	if (!payload) return;
 
-  _travarModal("modalRegra");
-  btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Salvando`;
+	_travarModal('modalRegra');
+	btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Salvando`;
 
-  try {
-    const signal = _getModalSignal("modalRegra");
+	try {
+		const signal = _getModalSignal('modalRegra');
 
-    let r;
-    if (payload.id) {
-      r = await regrasDatasService.atualizar(payload, senhaDigitada, signal);
-    } else {
-      r = await regrasDatasService.criar(payload, senhaDigitada, signal);
-    }
+		let r;
+		if (payload.id) {
+			r = await regrasDatasService.atualizar(payload, senhaDigitada, signal);
+		} else {
+			r = await regrasDatasService.criar(payload, senhaDigitada, signal);
+		}
 
-    if (signal.aborted) return;
+		if (signal.aborted) return;
 
-    if (r?.error) {
-      mostrarErroCampo("erroValidacaoCamposRegra", r.error);
-      return;
-    }
+		if (r?.error) {
+			mostrarErroCampo('erroValidacaoCamposRegra', r.error);
+			return;
+		}
 
-    bootstrap.Modal.getInstance(document.getElementById("modalRegra")).hide();
+		bootstrap.Modal.getInstance(document.getElementById('modalRegra')).hide();
 
-    const msg = payload.id
-      ? "Regra editada com sucesso"
-      : "Regra criada com sucesso";
-    abrirModalAviso("Sucesso", msg);
-    await reloadRegras();
-  } catch (err) {
-    if (err?.name === "AbortError") return;
-    console.error(err);
-    abrirModalAviso("Erro", "Erro ao salvar regra");
-  } finally {
-    _liberarModal("modalRegra");
-    btn.innerHTML = textoOriginal;
-  }
+		const msg = payload.id ? 'Regra editada com sucesso' : 'Regra criada com sucesso';
+		abrirModalAviso('Sucesso', msg);
+		await reloadRegras();
+	} catch (err) {
+		if (err?.name === 'AbortError') return;
+		console.error(err);
+		abrirModalAviso('Erro', 'Erro ao salvar regra');
+	} finally {
+		_liberarModal('modalRegra');
+		btn.innerHTML = textoOriginal;
+	}
 }
 
 /* =========================
@@ -288,56 +268,56 @@ async function salvarRegra() {
 ========================= */
 
 async function editarRegra(id, btn) {
-  limparErroCampo("erroValidacaoCamposRegra");
+	limparErroCampo('erroValidacaoCamposRegra');
 
-  let salvou = false;
-  const textoOriginal = btn.innerHTML;
+	let salvou = false;
+	const textoOriginal = btn.innerHTML;
 
-  try {
-    btn.disabled = true;
-    btn.innerHTML = `
+	try {
+		btn.disabled = true;
+		btn.innerHTML = `
       <span class="spinner-border spinner-border-sm"></span>
     `;
 
-    const regras = await regrasDatasService.listar();
-    const regra = (regras || []).find((r) => Number(r.id) === Number(id));
+		const regras = await regrasDatasService.listar();
+		const regra = (regras || []).find((r) => Number(r.id) === Number(id));
 
-    if (!regra) {
-      abrirModalAviso("Erro", "Regra não encontrada");
-      return;
-    }
+		if (!regra) {
+			abrirModalAviso('Erro', 'Regra não encontrada');
+			return;
+		}
 
-    limparFormularioRegra();
-    preencherFormularioRegra(regra);
+		limparFormularioRegra();
+		preencherFormularioRegra(regra);
 
-    document.getElementById("modalRegraTitulo").innerText = "Editar Regra";
-    document.getElementById("btnSalvarRegra").onclick = async () => {
-      salvou = true;
-      await salvarRegra();
-    };
+		document.getElementById('modalRegraTitulo').innerText = 'Editar Regra';
+		document.getElementById('btnSalvarRegra').onclick = async () => {
+			salvou = true;
+			await salvarRegra();
+		};
 
-    const modalEl = document.getElementById("modalRegra");
-    const modal = new bootstrap.Modal(modalEl);
+		const modalEl = document.getElementById('modalRegra');
+		const modal = new bootstrap.Modal(modalEl);
 
-    modalEl.addEventListener(
-      "hidden.bs.modal",
-      () => {
-        if (!salvou) {
-          btn.disabled = false;
-          btn.innerHTML = textoOriginal;
-        }
-      },
-      { once: true },
-    );
+		modalEl.addEventListener(
+			'hidden.bs.modal',
+			() => {
+				if (!salvou) {
+					btn.disabled = false;
+					btn.innerHTML = textoOriginal;
+				}
+			},
+			{ once: true },
+		);
 
-    modal.show();
-  } catch (err) {
-    console.error(err);
-    abrirModalAviso("Erro", "Erro ao carregar regra");
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = textoOriginal;
-  }
+		modal.show();
+	} catch (err) {
+		console.error(err);
+		abrirModalAviso('Erro', 'Erro ao carregar regra');
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = textoOriginal;
+	}
 }
 
 /* =========================
@@ -345,46 +325,43 @@ async function editarRegra(id, btn) {
 ========================= */
 
 function excluirRegra(id, btnTrash) {
-  document.getElementById("confirmTitle").innerText = "Excluir Regra";
-  document.getElementById("confirmMessage").innerText =
-    "Deseja realmente excluir esta regra?";
+	document.getElementById('confirmTitle').innerText = 'Excluir Regra';
+	document.getElementById('confirmMessage').innerText = 'Deseja realmente excluir esta regra?';
 
-  const btnOk = document.getElementById("confirmOk");
+	const btnOk = document.getElementById('confirmOk');
 
-  btnOk.onclick = async () => {
-    const textoOk = btnOk.innerHTML;
-    const textoTrash = btnTrash.innerHTML;
+	btnOk.onclick = async () => {
+		const textoOk = btnOk.innerHTML;
+		const textoTrash = btnTrash.innerHTML;
 
-    _travarModal("confirmModal");
-    try {
-      btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Excluindo`;
+		_travarModal('confirmModal');
+		try {
+			btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Excluindo`;
 
-      const signal = _getModalSignal("confirmModal");
-      const r = await regrasDatasService.excluir(id, senhaDigitada, signal);
+			const signal = _getModalSignal('confirmModal');
+			const r = await regrasDatasService.excluir(id, senhaDigitada, signal);
 
-      if (signal.aborted) return;
-      if (r?.error) {
-        abrirModalAviso("Aviso", r.error);
-        return;
-      }
+			if (signal.aborted) return;
+			if (r?.error) {
+				abrirModalAviso('Aviso', r.error);
+				return;
+			}
 
-      abrirModalAviso("Sucesso", "Regra excluída com sucesso");
-      await reloadRegras();
-    } catch (err) {
-      if (err?.name === "AbortError") return;
-      console.error(err);
-      abrirModalAviso("Erro", "Erro ao excluir regra");
-    } finally {
-      _liberarModal("confirmModal");
-      btnOk.innerHTML = textoOk;
-      btnTrash.innerHTML = textoTrash;
-      bootstrap.Modal.getInstance(
-        document.getElementById("confirmModal"),
-      ).hide();
-    }
-  };
+			abrirModalAviso('Sucesso', 'Regra excluída com sucesso');
+			await reloadRegras();
+		} catch (err) {
+			if (err?.name === 'AbortError') return;
+			console.error(err);
+			abrirModalAviso('Erro', 'Erro ao excluir regra');
+		} finally {
+			_liberarModal('confirmModal');
+			btnOk.innerHTML = textoOk;
+			btnTrash.innerHTML = textoTrash;
+			bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+		}
+	};
 
-  new bootstrap.Modal(document.getElementById("confirmModal")).show();
+	new bootstrap.Modal(document.getElementById('confirmModal')).show();
 }
 
 /* =========================
@@ -392,16 +369,16 @@ function excluirRegra(id, btnTrash) {
 ========================= */
 
 async function carregarProgramacao() {
-  try {
-    let programacao = await programacaoService.listar();
+	try {
+		let programacao = await programacaoService.listar();
 
-    if (programacao?.error) {
-      throw new Error(programacao.error);
-    }
+		if (programacao?.error) {
+			throw new Error(programacao.error);
+		}
 
-    programacao = programacao || [];
-    dataStore.programacao = programacao;
-  } catch (err) {
-    console.error(err);
-  }
+		programacao = programacao || [];
+		dataStore.programacao = programacao;
+	} catch (err) {
+		console.error(err);
+	}
 }

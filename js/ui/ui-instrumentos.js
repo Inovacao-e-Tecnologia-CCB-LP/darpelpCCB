@@ -3,9 +3,9 @@
 ========================= */
 
 function abrirTelaInstrumentos() {
-  setTitle("Instrumentos");
-  conteudo.innerHTML = Ui.PainelInstrumentos();
-  carregarInstrumentos((firstTime = true));
+	setTitle('Instrumentos');
+	conteudo.innerHTML = Ui.PainelInstrumentos();
+	carregarInstrumentos((firstTime = true));
 }
 
 /* =========================
@@ -13,133 +13,131 @@ function abrirTelaInstrumentos() {
 ========================= */
 
 async function carregarInstrumentos(firstTime = false) {
-  const lista = document.getElementById("listaInstrumentos");
+	const lista = document.getElementById('listaInstrumentos');
 
-  travarUI();
-  try {
-    mostrarLoading("listaInstrumentos");
+	travarUI();
+	try {
+		mostrarLoading('listaInstrumentos');
 
-    let instrumentos = firstTime
-      ? dataStore.instrumentos
-      : await instrumentosService.listar();
+		let instrumentos = firstTime ? dataStore.instrumentos : await instrumentosService.listar();
 
-    if (instrumentos?.error) {
-      throw new Error(instrumentos.error);
-    }
+		if (instrumentos?.error) {
+			throw new Error(instrumentos.error);
+		}
 
-    instrumentos = instrumentos || [];
-    dataStore.instrumentos = instrumentos;
+		instrumentos = instrumentos || [];
+		dataStore.instrumentos = instrumentos;
 
-    if (!instrumentos.length) {
-      lista.innerHTML = `
+		if (!instrumentos.length) {
+			lista.innerHTML = `
         <div class="alert alert-secondary text-center">
           Nenhum instrumento cadastrado
         </div>
       `;
-      return;
-    }
+			return;
+		}
 
-    // ORDENAÇÃO: tipo → alfabética
-    instrumentos.sort((a, b) => {
-      if (a.tipo !== b.tipo) return a.tipo.localeCompare(b.tipo, "pt-BR");
-      return a.nome.localeCompare(b.nome, "pt-BR");
-    });
+		// ORDENAÇÃO: tipo → alfabética
+		instrumentos.sort((a, b) => {
+			if (a.tipo !== b.tipo) return a.tipo.localeCompare(b.tipo, 'pt-BR');
+			return a.nome.localeCompare(b.nome, 'pt-BR');
+		});
 
-    renderCardsInstrumentos(instrumentos);
-  } catch (err) {
-    console.error(err);
-    lista.innerHTML = `
+		renderCardsInstrumentos(instrumentos);
+	} catch (err) {
+		console.error(err);
+		lista.innerHTML = `
       <div class="alert alert-danger text-center">
         Erro ao carregar instrumentos
       </div>
     `;
-  } finally {
-    liberarUI();
-  }
+	} finally {
+		liberarUI();
+	}
 }
 
 /* Paleta de cores para tipos dinâmicos */
 const _tipoCores = [
-  "bg-primary",
-  "bg-success",
-  "bg-warning text-dark",
-  "bg-danger",
-  "bg-info text-dark",
-  "bg-secondary",
+	'bg-primary',
+	'bg-success',
+	'bg-warning text-dark',
+	'bg-danger',
+	'bg-info text-dark',
+	'bg-secondary',
 ];
-const _tipoCorMap = { corda: "bg-primary", sopro: "bg-success" };
+const _tipoCorMap = { corda: 'bg-primary', sopro: 'bg-success' };
 let _tipoCorIdx = 2; // começa após corda/sopro
 
 function _getCorTipo(tipo) {
-  const chave = (tipo || "").toLowerCase();
-  if (!_tipoCorMap[chave]) {
-    _tipoCorMap[chave] = _tipoCores[_tipoCorIdx % _tipoCores.length];
-    _tipoCorIdx++;
-  }
-  return _tipoCorMap[chave];
+	const chave = (tipo || '').toLowerCase();
+	if (!_tipoCorMap[chave]) {
+		_tipoCorMap[chave] = _tipoCores[_tipoCorIdx % _tipoCores.length];
+		_tipoCorIdx++;
+	}
+	return _tipoCorMap[chave];
 }
 
 function _formatarTipo(tipo) {
-  if (!tipo) return "";
+	if (!tipo) return '';
 
-  const chave = tipo.toLowerCase();
+	const chave = tipo.toLowerCase();
 
-  // Casos especiais
-  if (chave === "corda") return "Cordas";
-  if (chave === "sopro") return "Sopros";
+	// Casos especiais
+	if (chave === 'corda') return 'Cordas';
+	if (chave === 'sopro') return 'Sopros';
 
-  // Padrão normal
-  return chave.charAt(0).toUpperCase() + chave.slice(1);
+	// Padrão normal
+	return chave.charAt(0).toUpperCase() + chave.slice(1);
 }
 
 function _getIconeTipo(tipo) {
-  const chave = (tipo || "").toLowerCase();
+	const chave = (tipo || '').toLowerCase();
 
-  const mapa = {
-    corda: "bi-music-note-beamed",
-    sopro: "bi-wind",
-    teclas: "bi-keyboard",
-    outros: "bi-music-note",
-  };
+	const mapa = {
+		corda: 'bi-music-note-beamed',
+		sopro: 'bi-wind',
+		teclas: 'bi-keyboard',
+		outros: 'bi-music-note',
+	};
 
-  return mapa[chave] || "bi-music-note";
+	return mapa[chave] || 'bi-music-note';
 }
 
 function _getEstiloIconeTipo(tipo) {
-  const chave = (tipo || "").toLowerCase();
+	const chave = (tipo || '').toLowerCase();
 
-  const mapa = {
-    corda: { bg: "#dbeafe", color: "#1d4ed8" }, // azul
-    sopro: { bg: "#dcfce7", color: "#15803d" }, // verde
-    teclas: { bg: "#ede9fe", color: "#6d28d9" }, // amarelo
-  };
+	const mapa = {
+		corda: { bg: '#dbeafe', color: '#1d4ed8' }, // azul
+		sopro: { bg: '#dcfce7', color: '#15803d' }, // verde
+		teclas: { bg: '#ede9fe', color: '#6d28d9' }, // amarelo
+	};
 
-  return mapa[chave] || { bg: "#f3f4f6", color: "#6b7280" };
+	return mapa[chave] || { bg: '#f3f4f6', color: '#6b7280' };
 }
 
 function renderTabelaInstrumentos(instrumentos) {
-  renderCardsInstrumentos(instrumentos);
+	renderCardsInstrumentos(instrumentos);
 }
 
 function renderCardsInstrumentos(instrumentos) {
-  const lista = document.getElementById("listaInstrumentos");
+	const lista = document.getElementById('listaInstrumentos');
 
-  // Agrupar por tipo para seções visuais
-  const grupos = {};
-  instrumentos.forEach((i) => {
-    const tipo = (i.tipo || "outros").toLowerCase();
-    if (!grupos[tipo]) grupos[tipo] = [];
-    grupos[tipo].push(i);
-  });
+	// Agrupar por tipo para seções visuais
+	const grupos = {};
+	instrumentos.forEach((i) => {
+		const tipo = (i.tipo || 'outros').toLowerCase();
+		if (!grupos[tipo]) grupos[tipo] = [];
+		grupos[tipo].push(i);
+	});
 
-  let html = "";
+	let html = '';
 
-  Object.entries(grupos).forEach(([tipo, itens]) => {
-    const tipoLabel = _formatarTipo(tipo);
-    const iconeGrupo = _getIconeTipo(tipo);
-    const estilo = _getEstiloIconeTipo(tipo);
+	Object.entries(grupos).forEach(([tipo, itens]) => {
+		const tipoLabel = _formatarTipo(tipo);
+		const iconeGrupo = _getIconeTipo(tipo);
+		const estilo = _getEstiloIconeTipo(tipo);
 
-    html += `
+		html += `
       <div class="grupo-secao">
         <div class="grupo-secao-header">
           <i class="bi ${iconeGrupo}"></i>
@@ -148,8 +146,8 @@ function renderCardsInstrumentos(instrumentos) {
         </div>
         <div class="d-flex flex-column gap-2">`;
 
-    itens.forEach((i) => {
-      html += `
+		itens.forEach((i) => {
+			html += `
           <div class="item-card item-card-compacto">
             <div class="item-card-body d-flex align-items-center justify-content-between gap-3">
               <div class="d-flex align-items-center gap-2">
@@ -168,17 +166,17 @@ function renderCardsInstrumentos(instrumentos) {
               </div>
             </div>
           </div>`;
-    });
+		});
 
-    html += `</div></div>`;
-  });
+		html += `</div></div>`;
+	});
 
-  lista.innerHTML = `<div class="d-flex flex-column gap-4">${html}</div>`;
+	lista.innerHTML = `<div class="d-flex flex-column gap-4">${html}</div>`;
 }
 
 async function reloadInstrumentos() {
-  mostrarLoading("listaInstrumentos");
-  carregarInstrumentos();
+	mostrarLoading('listaInstrumentos');
+	carregarInstrumentos();
 }
 
 /* =========================
@@ -186,79 +184,77 @@ async function reloadInstrumentos() {
 ========================= */
 
 function _getTiposDisponiveis() {
-  const instrumentos = dataStore.instrumentos || [];
-  const tiposDados = [
-    ...new Set(
-      instrumentos.map((i) => (i.tipo || "").toLowerCase()).filter(Boolean),
-    ),
-  ];
-  const padrao = ["corda", "sopro"];
-  const extras = tiposDados.filter((t) => !padrao.includes(t)).sort();
-  return [...padrao, ...extras];
+	const instrumentos = dataStore.instrumentos || [];
+	const tiposDados = [
+		...new Set(instrumentos.map((i) => (i.tipo || '').toLowerCase()).filter(Boolean)),
+	];
+	const padrao = ['corda', 'sopro'];
+	const extras = tiposDados.filter((t) => !padrao.includes(t)).sort();
+	return [...padrao, ...extras];
 }
 
-function _renderTiposRadio(tipoSelecionado = "") {
-  const container = document.getElementById("instrumentoTipoRadios");
-  if (!container) return;
+function _renderTiposRadio(tipoSelecionado = '') {
+	const container = document.getElementById('instrumentoTipoRadios');
+	if (!container) return;
 
-  const tipos = _getTiposDisponiveis();
-  const sel = (tipoSelecionado || "").toLowerCase();
+	const tipos = _getTiposDisponiveis();
+	const sel = (tipoSelecionado || '').toLowerCase();
 
-  // Se tipoSelecionado não está na lista, adiciona
-  if (sel && !tipos.includes(sel)) tipos.push(sel);
+	// Se tipoSelecionado não está na lista, adiciona
+	if (sel && !tipos.includes(sel)) tipos.push(sel);
 
-  container.innerHTML = tipos
-    .map((tipo) => {
-      const id = `tipoRadio_${tipo}`;
-      const checked = tipo === sel ? "checked" : "";
-      return `
+	container.innerHTML = tipos
+		.map((tipo) => {
+			const id = `tipoRadio_${tipo}`;
+			const checked = tipo === sel ? 'checked' : '';
+			return `
       <div class="form-check d-flex align-items-center gap-1 me-3">
         <input class="form-check-input mt-0" type="radio"
           name="instrumentoTipo" id="${id}" value="${tipo}" ${checked}>
         <label class="form-check-label" for="${id}">${_formatarTipo(tipo)}</label>
       </div>
     `;
-    })
-    .join("");
+		})
+		.join('');
 }
 
 function toggleNovoTipo() {
-  const container = document.getElementById("novoTipoContainer");
-  const btn = document.getElementById("btnNovoTipo");
-  container.classList.remove("d-none");
-  btn.classList.add("d-none");
-  const input = document.getElementById("inputNovoTipo");
-  if (input) {
-    input.value = "";
-    input.focus();
-  }
-  limparErroCampo("erroNovoTipo");
+	const container = document.getElementById('novoTipoContainer');
+	const btn = document.getElementById('btnNovoTipo');
+	container.classList.remove('d-none');
+	btn.classList.add('d-none');
+	const input = document.getElementById('inputNovoTipo');
+	if (input) {
+		input.value = '';
+		input.focus();
+	}
+	limparErroCampo('erroNovoTipo');
 }
 
 function cancelarNovoTipo() {
-  document.getElementById("novoTipoContainer")?.classList.add("d-none");
-  document.getElementById("btnNovoTipo")?.classList.remove("d-none");
-  limparErroCampo("erroNovoTipo");
+	document.getElementById('novoTipoContainer')?.classList.add('d-none');
+	document.getElementById('btnNovoTipo')?.classList.remove('d-none');
+	limparErroCampo('erroNovoTipo');
 }
 
 function confirmarNovoTipo() {
-  const input = document.getElementById("inputNovoTipo");
-  const valor = (input?.value || "").trim().toLowerCase();
+	const input = document.getElementById('inputNovoTipo');
+	const valor = (input?.value || '').trim().toLowerCase();
 
-  if (!valor) {
-    mostrarErroCampo("erroNovoTipo", "Digite um nome para o tipo");
-    return;
-  }
+	if (!valor) {
+		mostrarErroCampo('erroNovoTipo', 'Digite um nome para o tipo');
+		return;
+	}
 
-  const tiposExistentes = _getTiposDisponiveis();
-  if (tiposExistentes.includes(valor)) {
-    mostrarErroCampo("erroNovoTipo", "Este tipo já existe");
-    return;
-  }
+	const tiposExistentes = _getTiposDisponiveis();
+	if (tiposExistentes.includes(valor)) {
+		mostrarErroCampo('erroNovoTipo', 'Este tipo já existe');
+		return;
+	}
 
-  // Re-renderiza com o novo tipo e o seleciona
-  _renderTiposRadio(valor);
-  cancelarNovoTipo();
+	// Re-renderiza com o novo tipo e o seleciona
+	_renderTiposRadio(valor);
+	cancelarNovoTipo();
 }
 
 /* =========================
@@ -266,35 +262,30 @@ function confirmarNovoTipo() {
 ========================= */
 
 function montarPayloadInstrumento() {
-  const id = document.getElementById("instrumentoId").value;
-  const nome = document.getElementById("instrumentoNome").value.trim();
-  const tipo = document.querySelector(
-    'input[name="instrumentoTipo"]:checked',
-  )?.value;
+	const id = document.getElementById('instrumentoId').value;
+	const nome = document.getElementById('instrumentoNome').value.trim();
+	const tipo = document.querySelector('input[name="instrumentoTipo"]:checked')?.value;
 
-  if (!nome || !tipo) {
-    mostrarErroCampo(
-      "erroValidacaoCamposInstrumento",
-      "Preencha todos os campos corretamente",
-    );
-    return null;
-  }
+	if (!nome || !tipo) {
+		mostrarErroCampo('erroValidacaoCamposInstrumento', 'Preencha todos os campos corretamente');
+		return null;
+	}
 
-  return { id: id ? Number(id) : null, nome, tipo };
+	return { id: id ? Number(id) : null, nome, tipo };
 }
 
 function preencherFormularioInstrumento(instrumento) {
-  document.getElementById("instrumentoId").value = instrumento.id ?? "";
-  document.getElementById("instrumentoNome").value = instrumento.nome ?? "";
-  _renderTiposRadio(instrumento.tipo || "");
-  cancelarNovoTipo();
+	document.getElementById('instrumentoId').value = instrumento.id ?? '';
+	document.getElementById('instrumentoNome').value = instrumento.nome ?? '';
+	_renderTiposRadio(instrumento.tipo || '');
+	cancelarNovoTipo();
 }
 
 function limparFormularioInstrumento() {
-  document.getElementById("instrumentoId").value = "";
-  document.getElementById("instrumentoNome").value = "";
-  _renderTiposRadio();
-  cancelarNovoTipo();
+	document.getElementById('instrumentoId').value = '';
+	document.getElementById('instrumentoNome').value = '';
+	_renderTiposRadio();
+	cancelarNovoTipo();
 }
 
 /* =========================
@@ -302,14 +293,13 @@ function limparFormularioInstrumento() {
 ========================= */
 
 function abrirModalNovoInstrumento() {
-  limparErrosCamposInstrumento();
-  limparFormularioInstrumento();
+	limparErrosCamposInstrumento();
+	limparFormularioInstrumento();
 
-  document.getElementById("modalInstrumentoTitulo").innerText =
-    "Novo Instrumento";
-  document.getElementById("btnSalvarInstrumento").onclick = salvarInstrumento;
+	document.getElementById('modalInstrumentoTitulo').innerText = 'Novo Instrumento';
+	document.getElementById('btnSalvarInstrumento').onclick = salvarInstrumento;
 
-  new bootstrap.Modal(document.getElementById("modalInstrumento")).show();
+	new bootstrap.Modal(document.getElementById('modalInstrumento')).show();
 }
 
 /* =========================
@@ -317,52 +307,48 @@ function abrirModalNovoInstrumento() {
 ========================= */
 
 async function salvarInstrumento() {
-  limparErrosCamposInstrumento();
+	limparErrosCamposInstrumento();
 
-  const btn = document.getElementById("btnSalvarInstrumento");
-  const textoOriginal = btn.innerHTML;
+	const btn = document.getElementById('btnSalvarInstrumento');
+	const textoOriginal = btn.innerHTML;
 
-  const payload = montarPayloadInstrumento();
-  if (!payload) return;
+	const payload = montarPayloadInstrumento();
+	if (!payload) return;
 
-  _travarModal("modalInstrumento");
-  btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Salvando`;
+	_travarModal('modalInstrumento');
+	btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span> Salvando`;
 
-  try {
-    const signal = _getModalSignal("modalInstrumento");
+	try {
+		const signal = _getModalSignal('modalInstrumento');
 
-    const r = payload.id
-      ? await instrumentosService.atualizar(payload, senhaDigitada, signal)
-      : await instrumentosService.criar(payload, senhaDigitada, signal);
+		const r = payload.id
+			? await instrumentosService.atualizar(payload, senhaDigitada, signal)
+			: await instrumentosService.criar(payload, senhaDigitada, signal);
 
-    if (signal.aborted) return;
+		if (signal.aborted) return;
 
-    if (r?.error) {
-      limparErrosCamposInstrumento();
-      mostrarErroCampo("erroInstrumentoNome", r.error);
-      return;
-    }
+		if (r?.error) {
+			limparErrosCamposInstrumento();
+			mostrarErroCampo('erroInstrumentoNome', r.error);
+			return;
+		}
 
-    bootstrap.Modal.getInstance(
-      document.getElementById("modalInstrumento"),
-    ).hide();
+		bootstrap.Modal.getInstance(document.getElementById('modalInstrumento')).hide();
 
-    abrirModalAviso(
-      "Sucesso",
-      payload.id
-        ? "Instrumento editado com sucesso"
-        : "Instrumento criado com sucesso",
-    );
+		abrirModalAviso(
+			'Sucesso',
+			payload.id ? 'Instrumento editado com sucesso' : 'Instrumento criado com sucesso',
+		);
 
-    await reloadInstrumentos();
-  } catch (err) {
-    if (err?.name === "AbortError") return;
-    console.error(err);
-    abrirModalAviso("Erro", "Erro ao salvar instrumento");
-  } finally {
-    _liberarModal("modalInstrumento");
-    btn.innerHTML = textoOriginal;
-  }
+		await reloadInstrumentos();
+	} catch (err) {
+		if (err?.name === 'AbortError') return;
+		console.error(err);
+		abrirModalAviso('Erro', 'Erro ao salvar instrumento');
+	} finally {
+		_liberarModal('modalInstrumento');
+		btn.innerHTML = textoOriginal;
+	}
 }
 
 /* =========================
@@ -374,36 +360,33 @@ async function salvarInstrumento() {
 ========================= */
 
 async function editarInstrumento(id, btnEditar) {
-  limparErrosCamposInstrumento();
+	limparErrosCamposInstrumento();
 
-  const textoOriginal = btnEditar.innerHTML;
-  btnEditar.disabled = true;
-  btnEditar.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
+	const textoOriginal = btnEditar.innerHTML;
+	btnEditar.disabled = true;
+	btnEditar.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
 
-  try {
-    const instrumentos = await instrumentosService.listar();
-    const instrumento = (instrumentos || []).find(
-      (i) => Number(i.id) === Number(id),
-    );
+	try {
+		const instrumentos = await instrumentosService.listar();
+		const instrumento = (instrumentos || []).find((i) => Number(i.id) === Number(id));
 
-    if (!instrumento) {
-      abrirModalAviso("Erro", "Instrumento não encontrado");
-      return;
-    }
+		if (!instrumento) {
+			abrirModalAviso('Erro', 'Instrumento não encontrado');
+			return;
+		}
 
-    preencherFormularioInstrumento(instrumento);
-    document.getElementById("modalInstrumentoTitulo").innerText =
-      "Editar Instrumento";
-    document.getElementById("btnSalvarInstrumento").onclick = salvarInstrumento;
+		preencherFormularioInstrumento(instrumento);
+		document.getElementById('modalInstrumentoTitulo').innerText = 'Editar Instrumento';
+		document.getElementById('btnSalvarInstrumento').onclick = salvarInstrumento;
 
-    new bootstrap.Modal(document.getElementById("modalInstrumento")).show();
-  } catch (err) {
-    console.error(err);
-    abrirModalAviso("Erro", "Erro ao carregar instrumento");
-  } finally {
-    btnEditar.disabled = false;
-    btnEditar.innerHTML = textoOriginal;
-  }
+		new bootstrap.Modal(document.getElementById('modalInstrumento')).show();
+	} catch (err) {
+		console.error(err);
+		abrirModalAviso('Erro', 'Erro ao carregar instrumento');
+	} finally {
+		btnEditar.disabled = false;
+		btnEditar.innerHTML = textoOriginal;
+	}
 }
 
 /* =========================
@@ -411,47 +394,45 @@ async function editarInstrumento(id, btnEditar) {
 ========================= */
 
 function excluirInstrumento(id, btnTrash) {
-  document.getElementById("confirmTitle").innerText = "Excluir Instrumento";
-  document.getElementById("confirmMessage").innerText =
-    "Deseja realmente excluir este instrumento?";
+	document.getElementById('confirmTitle').innerText = 'Excluir Instrumento';
+	document.getElementById('confirmMessage').innerText =
+		'Deseja realmente excluir este instrumento?';
 
-  const btnOk = document.getElementById("confirmOk");
-  btnOk.onclick = null;
+	const btnOk = document.getElementById('confirmOk');
+	btnOk.onclick = null;
 
-  btnOk.onclick = async () => {
-    const textoOk = btnOk.innerHTML;
-    const textoTrash = btnTrash.innerHTML;
+	btnOk.onclick = async () => {
+		const textoOk = btnOk.innerHTML;
+		const textoTrash = btnTrash.innerHTML;
 
-    _travarModal("confirmModal");
-    try {
-      btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Excluindo`;
+		_travarModal('confirmModal');
+		try {
+			btnOk.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Excluindo`;
 
-      const signal = _getModalSignal("confirmModal");
-      const r = await instrumentosService.excluir(id, senhaDigitada, signal);
+			const signal = _getModalSignal('confirmModal');
+			const r = await instrumentosService.excluir(id, senhaDigitada, signal);
 
-      if (signal.aborted) return;
-      if (r?.error) {
-        abrirModalAviso("Aviso", r.error);
-        return;
-      }
+			if (signal.aborted) return;
+			if (r?.error) {
+				abrirModalAviso('Aviso', r.error);
+				return;
+			}
 
-      abrirModalAviso("Sucesso", "Instrumento excluído com sucesso");
-      await reloadInstrumentos();
-    } catch (err) {
-      if (err?.name === "AbortError") return;
-      console.error(err);
-      abrirModalAviso("Não foi possível excluir", err.message);
-    } finally {
-      _liberarModal("confirmModal");
-      btnOk.innerHTML = textoOk;
-      btnTrash.innerHTML = textoTrash;
-      bootstrap.Modal.getInstance(
-        document.getElementById("confirmModal"),
-      ).hide();
-    }
-  };
+			abrirModalAviso('Sucesso', 'Instrumento excluído com sucesso');
+			await reloadInstrumentos();
+		} catch (err) {
+			if (err?.name === 'AbortError') return;
+			console.error(err);
+			abrirModalAviso('Não foi possível excluir', err.message);
+		} finally {
+			_liberarModal('confirmModal');
+			btnOk.innerHTML = textoOk;
+			btnTrash.innerHTML = textoTrash;
+			bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
+		}
+	};
 
-  new bootstrap.Modal(document.getElementById("confirmModal")).show();
+	new bootstrap.Modal(document.getElementById('confirmModal')).show();
 }
 
 /* =========================
@@ -460,13 +441,13 @@ function excluirInstrumento(id, btnTrash) {
 
 // Mantidos para compatibilidade com ui-locais.js (filtro de tipos)
 function desabilitarBotaoInstrumentos() {
-  travarUI();
+	travarUI();
 }
 function habilitarBotaoInstrumentos() {
-  liberarUI();
+	liberarUI();
 }
 
 function limparErrosCamposInstrumento() {
-  limparErroCampo("erroInstrumentoNome");
-  limparErroCampo("erroValidacaoCamposInstrumento");
+	limparErroCampo('erroInstrumentoNome');
+	limparErroCampo('erroValidacaoCamposInstrumento');
 }
