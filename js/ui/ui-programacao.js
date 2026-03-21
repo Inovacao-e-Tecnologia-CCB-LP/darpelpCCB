@@ -20,89 +20,94 @@ const _COR_HOSPITAL = {
 };
 
 const _CAL_PALETA = [
+	// Azul
 	{
-		bg: '#fde8e8',
-		border: '#c0392b',
-		dot: '#c0392b',
-		text: '#7b241c',
-		bgCard: '#fff0f0',
+		bg: '#e3f2fd',
+		border: '#1565c0',
+		dot: '#1565c0',
+		text: '#0d47a1',
+		bgCard: '#eef6fd',
 	},
+
+	// Verde
 	{
-		bg: '#d6eaf8',
-		border: '#1a5276',
-		dot: '#1a5276',
-		text: '#0d2b3e',
-		bgCard: '#eaf4fb',
+		bg: '#e8f5e9',
+		border: '#2e7d32',
+		dot: '#2e7d32',
+		text: '#1b5e20',
+		bgCard: '#f1fbf2',
 	},
+
+	// Roxo
 	{
-		bg: '#d5f5e3',
-		border: '#1e8449',
-		dot: '#1e8449',
-		text: '#145a32',
-		bgCard: '#eafaf1',
+		bg: '#f3e5f5',
+		border: '#7b1fa2',
+		dot: '#7b1fa2',
+		text: '#4a148c',
+		bgCard: '#faf0fc',
 	},
-	{
-		bg: '#f9e4b7',
-		border: '#b7770d',
-		dot: '#b7770d',
-		text: '#784212',
-		bgCard: '#fef9ec',
-	},
-	{
-		bg: '#e8daef',
-		border: '#6c3483',
-		dot: '#6c3483',
-		text: '#4a235a',
-		bgCard: '#f5eef8',
-	},
-	{
-		bg: '#d1f2eb',
-		border: '#148f77',
-		dot: '#148f77',
-		text: '#0e6655',
-		bgCard: '#e8f8f5',
-	},
-	{
-		bg: '#fce4ec',
-		border: '#ad1457',
-		dot: '#ad1457',
-		text: '#880e4f',
-		bgCard: '#fce4ec',
-	},
+
+	// Laranja
 	{
 		bg: '#fff3e0',
-		border: '#e65100',
-		dot: '#e65100',
-		text: '#bf360c',
-		bgCard: '#fff8f0',
+		border: '#ef6c00',
+		dot: '#ef6c00',
+		text: '#e65100',
+		bgCard: '#fff8f2',
 	},
-	{
-		bg: '#e8eaf6',
-		border: '#283593',
-		dot: '#283593',
-		text: '#1a237e',
-		bgCard: '#ede7f6',
-	},
-	{
-		bg: '#fbe9e7',
-		border: '#bf360c',
-		dot: '#bf360c',
-		text: '#8d1c06',
-		bgCard: '#fbe9e7',
-	},
-	{
-		bg: '#e0f2f1',
-		border: '#00695c',
-		dot: '#00695c',
-		text: '#004d40',
-		bgCard: '#e0f7f4',
-	},
+
+	// Amarelo
 	{
 		bg: '#fff8e1',
-		border: '#f57f17',
-		dot: '#f57f17',
+		border: '#fbc02d',
+		dot: '#fbc02d',
 		text: '#e65100',
-		bgCard: '#fff8e1',
+		bgCard: '#fffdf4',
+	},
+
+	// Ciano
+	{
+		bg: '#e0f7fa',
+		border: '#00838f',
+		dot: '#00838f',
+		text: '#006064',
+		bgCard: '#f0fcfd',
+	},
+
+	// Marrom
+	{
+		bg: '#efebe9',
+		border: '#6d4c41',
+		dot: '#6d4c41',
+		text: '#3e2723',
+		bgCard: '#f7f4f2',
+	},
+
+	// Cinza
+	{
+		bg: '#eceff1',
+		border: '#455a64',
+		dot: '#455a64',
+		text: '#263238',
+		bgCard: '#f4f6f7',
+	},
+
+	// Rosa
+	{
+		bg: '#fce4ec',
+		border: '#d81b60',
+		dot: '#d81b60',
+		text: '#880e4f',
+		bgCard: '#fff0f5',
+	},
+
+	// Verde oliva
+	{
+		bg: '#f1f8e9',
+		border: '#827717',
+		dot: '#827717',
+		text: '#4e342e',
+		bgCard: '#f9fbf4',
 	},
 ];
 
@@ -126,24 +131,35 @@ function _salvarCores() {
 function _getCorLocal(localId) {
 	const key = String(localId);
 
-	// Força vermelho sangue em qualquer local cujo nome contenha "hospital"
 	const localObj = (dataStore.locais || []).find((l) => String(l.id) === key);
 	const nomeLocal = (localObj?.nome || '').toLowerCase();
-	if (nomeLocal.includes('hospital')) {
-		_calCoresLocais[key] = { ..._COR_HOSPITAL };
-		_salvarCores();
+
+	const corHospitalDot = _COR_HOSPITAL.dot;
+
+	// Hospital sempre vermelho
+	if (nomeLocal.startsWith('hospital')) {
+		if (!_calCoresLocais[key]) {
+			_calCoresLocais[key] = { ..._COR_HOSPITAL };
+			_salvarCores();
+		}
 		return _calCoresLocais[key];
 	}
 
+	// Limpa caso tenha herdado vermelho antigo
+	if (_calCoresLocais[key]?.dot === corHospitalDot) {
+		delete _calCoresLocais[key];
+	}
+
 	if (!_calCoresLocais[key]) {
-		const usadas = new Set(Object.values(_calCoresLocais).map((c) => c.dot));
-		const livres = _CAL_PALETA.filter((c) => !usadas.has(c.dot));
-		const fonte = livres.length ? livres : _CAL_PALETA;
+		const index = _hashId(localId) % _CAL_PALETA.length;
+
 		_calCoresLocais[key] = {
-			...fonte[Math.floor(Math.random() * fonte.length)],
+			..._CAL_PALETA[index],
 		};
+
 		_salvarCores();
 	}
+
 	return _calCoresLocais[key];
 }
 
@@ -940,4 +956,16 @@ async function _capturarCalendario() {
 
 function _capitalizar(str) {
 	return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
+}
+
+function _hashId(id) {
+	let hash = 0;
+	const str = String(id);
+
+	for (let i = 0; i < str.length; i++) {
+		hash = (hash << 5) - hash + str.charCodeAt(i);
+		hash |= 0; // força 32 bits
+	}
+
+	return Math.abs(hash);
 }
