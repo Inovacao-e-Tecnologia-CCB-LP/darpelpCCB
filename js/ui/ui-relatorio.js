@@ -9,18 +9,18 @@ let programacaoMap = {};
 ========================= */
 
 const RelatorioState = {
-  localId: null,
-  programacaoId: null,
-  programacaoAdicionarId: null,
-  modoEdicao: false,
-  historicoRemocoes: [],
+	localId: null,
+	programacaoId: null,
+	programacaoAdicionarId: null,
+	modoEdicao: false,
+	historicoRemocoes: [],
 
-  reset() {
-    this.localId = null;
-    this.programacaoId = null;
-    this.modoEdicao = false;
-    this.historicoRemocoes = [];
-  },
+	reset() {
+		this.localId = null;
+		this.programacaoId = null;
+		this.modoEdicao = false;
+		this.historicoRemocoes = [];
+	},
 };
 
 /* =========================
@@ -28,70 +28,68 @@ const RelatorioState = {
 ========================= */
 
 const UiRelatorios = {
-  loading() {
-    return `
+	loading() {
+		return `
       <div class="text-center my-4">
         <div class="spinner-border text-dark"></div>
       </div>
     `;
-  },
+	},
 
-  alerta(tipo, texto) {
-    return `
+	alerta(tipo, texto) {
+		return `
       <div class="alert alert-${tipo} text-center py-2">
         ${texto}
       </div>
     `;
-  },
+	},
 
-  cardLocal(local, onClick) {
-    const item = document.createElement("div");
-    item.className =
-      "list-group-item d-flex justify-content-between align-items-center local-item";
-    item.style.cursor = "pointer";
+	cardLocal(local, onClick) {
+		const item = document.createElement('div');
+		item.className =
+			'list-group-item d-flex justify-content-between align-items-center local-item';
+		item.style.cursor = 'pointer';
 
-    item.innerHTML = `
+		item.innerHTML = `
       <span class="fw-semibold">${local.nome}</span>
       <i class="bi bi-check-circle-fill opacity-0"></i>
     `;
 
-    item.onclick = () => onClick(item);
-    return item;
-  },
+		item.onclick = () => onClick(item);
+		return item;
+	},
 
-  cardProgramacao(p, onClick) {
-    const card = document.createElement("div");
-    card.className =
-      "border rounded-3 p-3 d-flex justify-content-between align-items-start programacao-item";
-    card.style.cursor = "pointer";
+	cardProgramacao(p, onClick) {
+		const card = document.createElement('div');
+		card.className =
+			'border rounded-3 p-3 d-flex justify-content-between align-items-start programacao-item';
+		card.style.cursor = 'pointer';
 
-    card.innerHTML = `
+		card.innerHTML = `
       <div>
         <div class="fw-semibold mb-1">
           ${p.tipo_visita} – ${formatarData(p.data)}
         </div>
         <div class="small text-muted lh-sm">
-          ${p.descricao} (${p.horario?.replace(/'/g, "")})
+          ${p.descricao} (${p.horario?.replace(/'/g, '')})
         </div>
       </div>
       <i class="bi bi-check-circle-fill fs-5 opacity-0"></i>
     `;
 
-    card.onclick = () => onClick(card);
-    return card;
-  },
+		card.onclick = () => onClick(card);
+		return card;
+	},
 };
 
 function obterValoresFormularioRelatorio() {
-  return {
-    responsavel: document.getElementById("responsavel")?.value?.trim() || "",
-    qtdInternos: Number(document.getElementById("qtdInternos")?.value || 0),
-    qtdColaboradores: Number(
-      document.getElementById("qtdColaboradores")?.value || 0,
-    ),
-    palavra: document.getElementById("palavra")?.value || "",
-    observacoes: document.getElementById("observacoes")?.value || "",
-  };
+	return {
+		responsavel: document.getElementById('responsavel')?.value?.trim() || '',
+		qtdInternos: Number(document.getElementById('qtdInternos')?.value || 0),
+		qtdColaboradores: Number(document.getElementById('qtdColaboradores')?.value || 0),
+		palavra: document.getElementById('palavra')?.value || '',
+		observacoes: document.getElementById('observacoes')?.value || '',
+	};
 }
 
 /* =========================
@@ -99,47 +97,42 @@ function obterValoresFormularioRelatorio() {
 ========================= */
 
 async function abrirTelaRelatorios() {
-  setTitle("Relatórios");
-  conteudo.innerHTML = UiRelatorios.loading();
+	setTitle('Relatórios');
+	conteudo.innerHTML = UiRelatorios.loading();
 
-  travarUI();
-  try {
-    inscritos = await inscricoesService.listar();
+	travarUI();
+	try {
+		inscritos = await inscricoesService.listar();
 
-    const estrutura = inscricoesService.montarEstrutura(
-      inscritos,
-      dataStore.locais,
-      dataStore.programacao,
-      dataStore.instrumentos || [],
-    );
+		const estrutura = inscricoesService.montarEstrutura(
+			inscritos,
+			dataStore.locais,
+			dataStore.programacao,
+			dataStore.instrumentos || [],
+		);
 
-    inscritosPorProgramacao = estrutura.inscritosPorProgramacao;
-    instrumentosMap = estrutura.instrumentosMap;
-    locaisMap = estrutura.locaisMap;
-    programacaoMap = estrutura.programacaoMap;
+		inscritosPorProgramacao = estrutura.inscritosPorProgramacao;
+		instrumentosMap = estrutura.instrumentosMap;
+		locaisMap = estrutura.locaisMap;
+		programacaoMap = estrutura.programacaoMap;
 
-    conteudo.innerHTML = Ui.PainelRelatorio();
-    RelatorioState.reset();
+		conteudo.innerHTML = Ui.PainelRelatorio();
+		RelatorioState.reset();
 
-    document
-      .getElementById("formRelatorio")
-      ?.addEventListener("submit", function (e) {
-        e.preventDefault();
-      });
+		document.getElementById('formRelatorio')?.addEventListener('submit', function (e) {
+			e.preventDefault();
+		});
 
-    carregarLocaisRelatorio();
+		carregarLocaisRelatorio();
 
-    // ── Sugestão de nome do responsável via localStorage ──────────────────
-    _preencherResponsavelLocalStorage();
-  } catch (err) {
-    console.error(err);
-    conteudo.innerHTML = UiRelatorios.alerta(
-      "danger",
-      " Erro ao carregar tela de relatório",
-    );
-  } finally {
-    liberarUI();
-  }
+		// ── Sugestão de nome do responsável via localStorage ──────────────────
+		_preencherResponsavelLocalStorage();
+	} catch (err) {
+		console.error(err);
+		conteudo.innerHTML = UiRelatorios.alerta('danger', ' Erro ao carregar tela de relatório');
+	} finally {
+		liberarUI();
+	}
 }
 
 /**
@@ -148,20 +141,20 @@ async function abrirTelaRelatorios() {
  * perguntando se o usuário quer usar esse nome.
  */
 function _preencherResponsavelLocalStorage() {
-  const nomeSalvo = localStorageService.buscarNome();
-  const inputResponsavel = document.getElementById("responsavel");
+	const nomeSalvo = localStorageService.buscarNome();
+	const inputResponsavel = document.getElementById('responsavel');
 
-  if (!nomeSalvo || !inputResponsavel) return;
+	if (!nomeSalvo || !inputResponsavel) return;
 
-  // Cria o banner de sugestão abaixo do campo
-  const containerId = "sugestaoResponsavelContainer";
-  const jaExiste = document.getElementById(containerId);
-  if (jaExiste) jaExiste.remove();
+	// Cria o banner de sugestão abaixo do campo
+	const containerId = 'sugestaoResponsavelContainer';
+	const jaExiste = document.getElementById(containerId);
+	if (jaExiste) jaExiste.remove();
 
-  const container = document.createElement("div");
-  container.id = containerId;
-  container.className = "mt-2 d-flex align-items-center gap-2 flex-wrap";
-  container.innerHTML = `
+	const container = document.createElement('div');
+	container.id = containerId;
+	container.className = 'mt-2 d-flex align-items-center gap-2 flex-wrap';
+	container.innerHTML = `
     <span class="small text-muted">
       <i class="bi bi-person-check me-1"></i>Último responsável:
     </span>
@@ -184,19 +177,17 @@ function _preencherResponsavelLocalStorage() {
     </button>
   `;
 
-  inputResponsavel.parentNode.appendChild(container);
+	inputResponsavel.parentNode.appendChild(container);
 
-  document.getElementById("btnUsarNomeSalvo").addEventListener("click", () => {
-    inputResponsavel.value = nomeSalvo;
-    container.remove();
-    inputResponsavel.dispatchEvent(new Event("input"));
-  });
+	document.getElementById('btnUsarNomeSalvo').addEventListener('click', () => {
+		inputResponsavel.value = nomeSalvo;
+		container.remove();
+		inputResponsavel.dispatchEvent(new Event('input'));
+	});
 
-  document
-    .getElementById("btnIgnorarNomeSalvo")
-    .addEventListener("click", () => {
-      container.remove();
-    });
+	document.getElementById('btnIgnorarNomeSalvo').addEventListener('click', () => {
+		container.remove();
+	});
 }
 
 /* =========================
@@ -204,44 +195,44 @@ function _preencherResponsavelLocalStorage() {
 ========================= */
 
 function carregarLocaisRelatorio() {
-  const lista = document.getElementById("listaLocais");
-  const collapseEl = document.getElementById("collapseLocais");
-  const header = document.getElementById("localSelecionadoHeader");
-  const headerNome = document.getElementById("localSelecionadoNome");
-  const btnToggle = document.getElementById("btnToggleLocais");
+	const lista = document.getElementById('listaLocais');
+	const collapseEl = document.getElementById('collapseLocais');
+	const header = document.getElementById('localSelecionadoHeader');
+	const headerNome = document.getElementById('localSelecionadoNome');
+	const btnToggle = document.getElementById('btnToggleLocais');
 
-  if (!lista) return;
+	if (!lista) return;
 
-  lista.innerHTML = "";
-  header?.classList.add("d-none");
-  collapseEl?.classList.remove("fechado");
+	lista.innerHTML = '';
+	header?.classList.add('d-none');
+	collapseEl?.classList.remove('fechado');
 
-  dataStore.locais.forEach((local) => {
-    lista.appendChild(
-      UiRelatorios.cardLocal(local, (item) => {
-        lista.querySelectorAll(".local-item").forEach((el) => {
-          el.classList.remove("bg-dark", "text-white");
-          el.querySelector("i")?.classList.add("opacity-0");
-        });
+	dataStore.locais.forEach((local) => {
+		lista.appendChild(
+			UiRelatorios.cardLocal(local, (item) => {
+				lista.querySelectorAll('.local-item').forEach((el) => {
+					el.classList.remove('bg-dark', 'text-white');
+					el.querySelector('i')?.classList.add('opacity-0');
+				});
 
-        item.classList.add("bg-dark", "text-white");
-        item.querySelector("i").classList.remove("opacity-0");
+				item.classList.add('bg-dark', 'text-white');
+				item.querySelector('i').classList.remove('opacity-0');
 
-        RelatorioState.localId = local.id;
-        RelatorioState.programacaoId = null;
+				RelatorioState.localId = local.id;
+				RelatorioState.programacaoId = null;
 
-        headerNome.textContent = local.nome;
-        header.classList.remove("d-none");
-        collapseEl.classList.add("fechado");
+				headerNome.textContent = local.nome;
+				header.classList.remove('d-none');
+				collapseEl.classList.add('fechado');
 
-        carregarProgramacoesRelatorio(local.id);
-      }),
-    );
-  });
+				carregarProgramacoesRelatorio(local.id);
+			}),
+		);
+	});
 
-  btnToggle?.addEventListener("click", () => {
-    collapseEl.classList.toggle("fechado");
-  });
+	btnToggle?.addEventListener('click', () => {
+		collapseEl.classList.toggle('fechado');
+	});
 }
 
 /* =========================
@@ -249,53 +240,53 @@ function carregarLocaisRelatorio() {
 ========================= */
 
 function carregarProgramacoesRelatorio(localId) {
-  const lista = document.getElementById("listaProgramacoes");
-  const camposEv = document.getElementById("camposEvangelizacao");
+	const lista = document.getElementById('listaProgramacoes');
+	const camposEv = document.getElementById('camposEvangelizacao');
 
-  if (!lista) return;
+	if (!lista) return;
 
-  lista.innerHTML = "";
-  camposEv?.classList.add("d-none");
+	lista.innerHTML = '';
+	camposEv?.classList.add('d-none');
 
-  const programacoes = relatoriosService.filtrarProgramacoesComInscritos(
-    localId,
-    inscritosPorProgramacao,
-  );
+	const programacoes = relatoriosService.filtrarProgramacoesComInscritos(
+		localId,
+		inscritosPorProgramacao,
+	);
 
-  if (!programacoes.length) {
-    lista.innerHTML = UiRelatorios.alerta(
-      "warning",
-      "Nenhuma programação com inscritos para este local",
-    );
-    return;
-  }
+	if (!programacoes.length) {
+		lista.innerHTML = UiRelatorios.alerta(
+			'warning',
+			'Nenhuma programação com inscritos para este local',
+		);
+		return;
+	}
 
-  programacoes.forEach((p) => {
-    lista.appendChild(
-      UiRelatorios.cardProgramacao(p, (card) => {
-        lista.querySelectorAll(".programacao-item").forEach((el) => {
-          el.classList.remove("bg-dark", "text-white");
-          el.querySelector("i")?.classList.add("opacity-0");
-        });
+	programacoes.forEach((p) => {
+		lista.appendChild(
+			UiRelatorios.cardProgramacao(p, (card) => {
+				lista.querySelectorAll('.programacao-item').forEach((el) => {
+					el.classList.remove('bg-dark', 'text-white');
+					el.querySelector('i')?.classList.add('opacity-0');
+				});
 
-        card.classList.add("bg-dark", "text-white");
-        card.querySelector("i").classList.remove("opacity-0");
+				card.classList.add('bg-dark', 'text-white');
+				card.querySelector('i').classList.remove('opacity-0');
 
-        RelatorioState.programacaoId = p.id;
-        document.getElementById("dataRelatorio").value = p.data;
+				RelatorioState.programacaoId = p.id;
+				document.getElementById('dataRelatorio').value = p.data;
 
-        if (p.tipo_visita === "Evangelização") {
-          camposEv?.classList.remove("d-none");
-        } else {
-          camposEv?.classList.add("d-none");
-          document.getElementById("palavra").value = "";
-          document.getElementById("qtdInternos").value = "";
-        }
+				if (p.tipo_visita === 'Evangelização') {
+					camposEv?.classList.remove('d-none');
+				} else {
+					camposEv?.classList.add('d-none');
+					document.getElementById('palavra').value = '';
+					document.getElementById('qtdInternos').value = '';
+				}
 
-        carregarMusicosRelatorio(p.id);
-      }),
-    );
-  });
+				carregarMusicosRelatorio(p.id);
+			}),
+		);
+	});
 }
 
 /* =========================
@@ -303,42 +294,39 @@ function carregarProgramacoesRelatorio(localId) {
 ========================= */
 
 function carregarMusicosRelatorio(programacaoId) {
-  const container = document.getElementById("listaMusicos");
-  if (!container) return;
+	const container = document.getElementById('listaMusicos');
+	if (!container) return;
 
-  container.innerHTML = "";
-  const inscritosProg = inscritosPorProgramacao[programacaoId] || [];
+	container.innerHTML = '';
+	const inscritosProg = inscritosPorProgramacao[programacaoId] || [];
 
-  if (!inscritosProg.length) {
-    container.innerHTML = `
+	if (!inscritosProg.length) {
+		container.innerHTML = `
       <div class="text-muted fst-italic text-center">
         Nenhum músico nesta programação
       </div>
     `;
-    return;
-  }
+		return;
+	}
 
-  let modoEdicao = false;
+	let modoEdicao = false;
 
-  const header = document.createElement("div");
-  header.className = "d-flex justify-content-between align-items-center mb-2";
-  header.innerHTML = `
+	const header = document.createElement('div');
+	header.className = 'd-flex justify-content-between align-items-center mb-2';
+	header.innerHTML = `
   `;
 
-  const ul = document.createElement("ul");
-  ul.className = "list-unstyled mb-0";
+	const ul = document.createElement('ul');
+	ul.className = 'list-unstyled mb-0';
 
-  inscritosProg.forEach((i, index) => {
-    const instNome = instrumentosService.obterNomeInstrumento(
-      i,
-      instrumentosMap,
-    );
+	inscritosProg.forEach((i, index) => {
+		const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
 
-    const li = document.createElement("li");
-    li.className = "d-flex justify-content-between align-items-center mb-1";
+		const li = document.createElement('li');
+		li.className = 'd-flex justify-content-between align-items-center mb-1';
 
-    li.innerHTML = `
-    <span>${i.nome}${instNome ? ` (${instNome})` : ""}</span>
+		li.innerHTML = `
+    <span>${i.nome}${instNome ? ` (${instNome})` : ''}</span>
     <button 
       type="button"
       class="btn btn-sm btn-outline-danger ms-2"
@@ -348,113 +336,99 @@ function carregarMusicosRelatorio(programacaoId) {
     </button>
   `;
 
-    const btnRemover = li.querySelector("button");
+		const btnRemover = li.querySelector('button');
 
-    btnRemover.onclick = async (e) => {
-      e.stopPropagation();
+		btnRemover.onclick = async (e) => {
+			e.stopPropagation();
 
-      const confirmado = await abrirModalConfirmacao(
-        "Deseja excluir o músico?",
-        "Confirmar",
-      );
+			const confirmado = await abrirModalConfirmacao('Deseja excluir o músico?', 'Confirmar');
 
-      if (!confirmado) return;
+			if (!confirmado) return;
 
-      inscritosProg.splice(index, 1);
-      carregarMusicosRelatorio(programacaoId);
-    };
+			inscritosProg.splice(index, 1);
+			carregarMusicosRelatorio(programacaoId);
+		};
 
-    ul.appendChild(li);
-  });
+		ul.appendChild(li);
+	});
 
-  container.append(header, ul);
+	container.append(header, ul);
 
-  container.onclick = () => {
-    modoEdicao = !modoEdicao;
-    ul.querySelectorAll("button").forEach((b) =>
-      b.classList.toggle("d-none", !modoEdicao),
-    );
-  };
+	container.onclick = () => {
+		modoEdicao = !modoEdicao;
+		ul.querySelectorAll('button').forEach((b) => b.classList.toggle('d-none', !modoEdicao));
+	};
 
-  const inputMusicos = document.getElementById("qtdMusicos");
-  if (inputMusicos) {
-    inputMusicos.value = inscritosProg.length;
-  }
+	const inputMusicos = document.getElementById('qtdMusicos');
+	if (inputMusicos) {
+		inputMusicos.value = inscritosProg.length;
+	}
 
-  const btnAdicionar = document.createElement("button");
-  btnAdicionar.type = "button";
-  btnAdicionar.className = "btn btn-outline-primary btn-sm mt-2";
-  btnAdicionar.innerHTML = '<i class="bi bi-plus"></i> Adicionar';
+	const btnAdicionar = document.createElement('button');
+	btnAdicionar.type = 'button';
+	btnAdicionar.className = 'btn btn-outline-primary btn-sm mt-2';
+	btnAdicionar.innerHTML = '<i class="bi bi-plus"></i> Adicionar';
 
-  btnAdicionar.onclick = (e) => {
-    e.stopPropagation();
-    abrirModalAdicionarMusico(programacaoId);
-  };
+	btnAdicionar.onclick = (e) => {
+		e.stopPropagation();
+		abrirModalAdicionarMusico(programacaoId);
+	};
 
-  container.appendChild(btnAdicionar);
+	container.appendChild(btnAdicionar);
 }
 
 function abrirModalAdicionarMusico(programacaoId) {
-  RelatorioState.programacaoAdicionarId = programacaoId;
+	RelatorioState.programacaoAdicionarId = programacaoId;
 
-  document.getElementById("nomeMusicoModal").value = "";
-  document.getElementById("instrumentoMusicoModal").value = "";
+	document.getElementById('nomeMusicoModal').value = '';
+	document.getElementById('instrumentoMusicoModal').value = '';
 
-  limparErroCampo("erroValidacaoCamposMusico");
+	limparErroCampo('erroValidacaoCamposMusico');
 
-  const modal = new bootstrap.Modal(
-    document.getElementById("modalAdicionarMusico"),
-  );
+	const modal = new bootstrap.Modal(document.getElementById('modalAdicionarMusico'));
 
-  modal.show();
+	modal.show();
 
-  // Foco automático no nome
-  setTimeout(() => {
-    document.getElementById("nomeMusicoModal").focus();
-  }, 300);
+	// Foco automático no nome
+	setTimeout(() => {
+		document.getElementById('nomeMusicoModal').focus();
+	}, 300);
 }
 
 function salvarMusicoModal() {
-  const nome = document.getElementById("nomeMusicoModal").value.trim();
-  const instrumento = document
-    .getElementById("instrumentoMusicoModal")
-    .value.trim();
+	const nome = document.getElementById('nomeMusicoModal').value.trim();
+	const instrumento = document.getElementById('instrumentoMusicoModal').value.trim();
 
-  if (!nome || !instrumento) {
-    mostrarErroCampo(
-      "erroValidacaoCamposMusico",
-      "Preencha todos os campos obrigatórios",
-    );
-    return;
-  }
+	if (!nome || !instrumento) {
+		mostrarErroCampo('erroValidacaoCamposMusico', 'Preencha todos os campos obrigatórios');
+		return;
+	}
 
-  const programacaoId = RelatorioState.programacaoAdicionarId;
+	const programacaoId = RelatorioState.programacaoAdicionarId;
 
-  const novo = {
-    nome,
-    instrumento,
-    instrumentoNome: instrumento || "",
-  };
+	const novo = {
+		nome,
+		instrumento,
+		instrumentoNome: instrumento || '',
+	};
 
-  if (!inscritosPorProgramacao[programacaoId]) {
-    inscritosPorProgramacao[programacaoId] = [];
-  }
+	if (!inscritosPorProgramacao[programacaoId]) {
+		inscritosPorProgramacao[programacaoId] = [];
+	}
 
-  inscritosPorProgramacao[programacaoId].push(novo);
+	inscritosPorProgramacao[programacaoId].push(novo);
 
-  // Atualiza lista
-  carregarMusicosRelatorio(programacaoId);
+	// Atualiza lista
+	carregarMusicosRelatorio(programacaoId);
 
-  // Atualiza contador
-  const inputMusicos = document.getElementById("qtdMusicos");
-  if (inputMusicos) {
-    inputMusicos.value = inscritosPorProgramacao[programacaoId].length;
-  }
+	// Atualiza contador
+	const inputMusicos = document.getElementById('qtdMusicos');
+	if (inputMusicos) {
+		inputMusicos.value = inscritosPorProgramacao[programacaoId].length;
+	}
 
-  // Fecha modal
-  bootstrap.Modal.getInstance(
-    document.getElementById("modalAdicionarMusico"),
-  ).hide();
+	// Fecha modal
+	bootstrap.Modal.getInstance(document.getElementById('modalAdicionarMusico')).hide();
 }
 
 /* =========================
@@ -462,292 +436,271 @@ function salvarMusicoModal() {
 ========================= */
 
 function montarDadosRelatorio() {
-  const { localId, programacaoId } = RelatorioState;
-  const form = obterValoresFormularioRelatorio();
+	const { localId, programacaoId } = RelatorioState;
+	const form = obterValoresFormularioRelatorio();
 
-  if (!localId || !programacaoId || !form.responsavel) {
-    abrirModalAviso(
-      "Dados obrigatórios",
-      "Selecione o local, programação e informe o responsável",
-    );
-    return null;
-  }
+	if (!localId || !programacaoId || !form.responsavel) {
+		abrirModalAviso(
+			'Dados obrigatórios',
+			'Selecione o local, programação e informe o responsável',
+		);
+		return null;
+	}
 
-  // Salva o nome do responsável no localStorage para sugestão futura
-  localStorageService.salvarNome(form.responsavel);
+	// Salva o nome do responsável no localStorage para sugestão futura
+	localStorageService.salvarNome(form.responsavel);
 
-  const local = dataStore.locais.find((l) => l.id == localId);
-  const programacao = dataStore.programacao.find((p) => p.id == programacaoId);
+	const local = dataStore.locais.find((l) => l.id == localId);
+	const programacao = dataStore.programacao.find((p) => p.id == programacaoId);
 
-  const musicosRaw = inscritosPorProgramacao[programacaoId] || [];
+	const musicosRaw = inscritosPorProgramacao[programacaoId] || [];
 
-  const musicos = musicosRaw.map((c) => ({
-    ...c,
-    instrumentoNome:
-      c.instrumento_id && instrumentosMap[c.instrumento_id]
-        ? instrumentosMap[c.instrumento_id].nome
-        : c.instrumento || "",
-  }));
+	const musicos = musicosRaw.map((c) => ({
+		...c,
+		instrumentoNome:
+			c.instrumento_id && instrumentosMap[c.instrumento_id]
+				? instrumentosMap[c.instrumento_id].nome
+				: c.instrumento || '',
+	}));
 
-  const qtdMusicosManual = Number(
-    document.getElementById("qtdMusicos")?.value || musicos.length,
-  );
+	const qtdMusicosManual = Number(document.getElementById('qtdMusicos')?.value || musicos.length);
 
-  return {
-    responsavel: form.responsavel,
-    local,
-    programacao,
-    musicos,
-    qtdMusicos: qtdMusicosManual,
-    qtdInternos: form.qtdInternos,
-    qtdColaboradores: form.qtdColaboradores,
-    observacoes: form.observacoes,
-    evangelizacao:
-      programacao.tipo_visita === "Evangelização"
-        ? { palavra: form.palavra || "-" }
-        : null,
-  };
+	return {
+		responsavel: form.responsavel,
+		local,
+		programacao,
+		musicos,
+		qtdMusicos: qtdMusicosManual,
+		qtdInternos: form.qtdInternos,
+		qtdColaboradores: form.qtdColaboradores,
+		observacoes: form.observacoes,
+		evangelizacao:
+			programacao.tipo_visita === 'Evangelização' ? { palavra: form.palavra || '-' } : null,
+	};
 }
 
 async function gerarPDF() {
-  const dados = montarDadosRelatorio();
-  if (!dados) return;
+	const dados = montarDadosRelatorio();
+	if (!dados) return;
 
-  travarUI();
+	travarUI();
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("p", "mm", "a4");
+	const { jsPDF } = window.jspdf;
+	const doc = new jsPDF('p', 'mm', 'a4');
 
-  /* ================= CONFIGURAÇÕES GERAIS ================= */
-  const MARGEM_ESQ = 20;
-  const MARGEM_DIR = 190;
-  const LARGURA_TEXTO = 170;
+	/* ================= CONFIGURAÇÕES GERAIS ================= */
+	const MARGEM_ESQ = 20;
+	const MARGEM_DIR = 190;
+	const LARGURA_TEXTO = 170;
 
-  const FONT_TITULO = 16;
-  const FONT_SUBTITULO = 13;
-  const FONT_LABEL = 12;
-  const FONT_TEXTO = 11;
+	const FONT_TITULO = 16;
+	const FONT_SUBTITULO = 13;
+	const FONT_LABEL = 12;
+	const FONT_TEXTO = 11;
 
-  let y = 20;
+	let y = 20;
 
-  /* ================= LOGO ================= */
-  const logoUrl = "Img/logo-ccb.png";
-  const logoImg = await carregarImagemBase64(logoUrl);
-  doc.addImage(logoImg, "PNG", 80, y, 50, 22);
-  y += 30; //  antes era 35
+	/* ================= LOGO ================= */
+	const logoUrl = 'Img/logo-ccb.png';
+	const logoImg = await carregarImagemBase64(logoUrl);
+	doc.addImage(logoImg, 'PNG', 80, y, 50, 22);
+	y += 30; //  antes era 35
 
-  /* ================= CABEÇALHO ================= */
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(FONT_TITULO);
-  doc.text("DARPE - Lençóis Paulista", 105, y, { align: "center" });
-  y += 7;
+	/* ================= CABEÇALHO ================= */
+	doc.setFont('helvetica', 'bold');
+	doc.setFontSize(FONT_TITULO);
+	doc.text('DARPE - Lençóis Paulista', 105, y, { align: 'center' });
+	y += 7;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(FONT_TEXTO);
-  doc.text("Departamento de Assistência Religiosa para Evangelização", 105, y, {
-    align: "center",
-  });
+	doc.setFont('helvetica', 'normal');
+	doc.setFontSize(FONT_TEXTO);
+	doc.text('Departamento de Assistência Religiosa para Evangelização', 105, y, {
+		align: 'center',
+	});
 
-  y += 8;
-  doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
-  y += 9;
+	y += 8;
+	doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
+	y += 9;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(FONT_SUBTITULO);
-  doc.text("Relatório de Atendimento", 105, y, { align: "center" });
+	doc.setFont('helvetica', 'bold');
+	doc.setFontSize(FONT_SUBTITULO);
+	doc.text('Relatório de Atendimento', 105, y, { align: 'center' });
 
-  y += 8;
-  doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
-  y += 10;
+	y += 8;
+	doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
+	y += 10;
 
-  /* ================= FUNÇÃO LINHA ================= */
-  function linha(label, valor) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(FONT_LABEL);
-    doc.text(label, MARGEM_ESQ, y);
+	/* ================= FUNÇÃO LINHA ================= */
+	function linha(label, valor) {
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(FONT_LABEL);
+		doc.text(label, MARGEM_ESQ, y);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(FONT_TEXTO);
-    doc.text(valor || "-", MARGEM_ESQ + 70, y);
+		doc.setFont('helvetica', 'normal');
+		doc.setFontSize(FONT_TEXTO);
+		doc.text(valor || '-', MARGEM_ESQ + 70, y);
 
-    y += 7; //  antes era 9
+		y += 7; //  antes era 9
 
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
-  }
+		if (y > 270) {
+			doc.addPage();
+			y = 20;
+		}
+	}
 
-  /* ================= DADOS PRINCIPAIS ================= */
-  linha("Nome do Responsável:", dados.responsavel);
-  linha("Nome do Local:", dados.local.nome);
-  linha(
-    "Tipo de Visita:",
-    `${dados.programacao.tipo_visita} – ${dados.programacao.descricao}`,
-  );
+	/* ================= DADOS PRINCIPAIS ================= */
+	linha('Nome do Responsável:', dados.responsavel);
+	linha('Nome do Local:', dados.local.nome);
+	linha('Tipo de Visita:', `${dados.programacao.tipo_visita} – ${dados.programacao.descricao}`);
 
-  const horarioLimpo = dados.programacao.horario.replace(/'/g, "");
-  linha(
-    "Data e Hora:",
-    `${formatarData(dados.programacao.data)} – ${horarioLimpo}`,
-  );
+	const horarioLimpo = dados.programacao.horario.replace(/'/g, '');
+	linha('Data e Hora:', `${formatarData(dados.programacao.data)} – ${horarioLimpo}`);
 
-  if (dados.qtdInternos > 0) {
-    linha("Qtde. Internos:", String(dados.qtdInternos));
-  }
+	if (dados.qtdInternos > 0) {
+		linha('Qtde. Internos:', String(dados.qtdInternos));
+	}
 
-  linha("Qtde. Músicos:", String(dados.qtdMusicos));
+	linha('Qtde. Músicos:', String(dados.qtdMusicos));
 
-  if (dados.qtdColaboradores > 0) {
-    linha("Qtde. Colaboradores DARPE:", String(dados.qtdColaboradores));
-  }
+	if (dados.qtdColaboradores > 0) {
+		linha('Qtde. Colaboradores DARPE:', String(dados.qtdColaboradores));
+	}
 
-  /* ================= EVANGELIZAÇÃO ================= */
-  if (dados.evangelizacao) {
-    linha("Palavra:", dados.evangelizacao.palavra);
-  }
+	/* ================= EVANGELIZAÇÃO ================= */
+	if (dados.evangelizacao) {
+		linha('Palavra:', dados.evangelizacao.palavra);
+	}
 
-  /* ================= OBSERVAÇÕES ================= */
-  if (dados.observacoes?.trim()) {
-    y += 3;
-    doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
-    y += 7;
+	/* ================= OBSERVAÇÕES ================= */
+	if (dados.observacoes?.trim()) {
+		y += 3;
+		doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
+		y += 7;
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(FONT_SUBTITULO);
-    doc.text("Observações:", MARGEM_ESQ, y);
-    y += 6;
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(FONT_SUBTITULO);
+		doc.text('Observações:', MARGEM_ESQ, y);
+		y += 6;
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(FONT_TEXTO);
+		doc.setFont('helvetica', 'normal');
+		doc.setFontSize(FONT_TEXTO);
 
-    const textoObs = doc.splitTextToSize(dados.observacoes, LARGURA_TEXTO);
-    doc.text(textoObs, MARGEM_ESQ, y);
-    y += textoObs.length * 5; //  antes era 6
+		const textoObs = doc.splitTextToSize(dados.observacoes, LARGURA_TEXTO);
+		doc.text(textoObs, MARGEM_ESQ, y);
+		y += textoObs.length * 5; //  antes era 6
 
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
-  }
+		if (y > 270) {
+			doc.addPage();
+			y = 20;
+		}
+	}
 
-  /* ================= MÚSICOS ================= */
-  y += 4;
-  doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
-  y += 7;
+	/* ================= MÚSICOS ================= */
+	y += 4;
+	doc.line(MARGEM_ESQ, y, MARGEM_DIR, y);
+	y += 7;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(FONT_SUBTITULO);
-  doc.text("Nome/Instrumento dos Músicos:", MARGEM_ESQ, y);
-  y += 6;
+	doc.setFont('helvetica', 'bold');
+	doc.setFontSize(FONT_SUBTITULO);
+	doc.text('Nome/Instrumento dos Músicos:', MARGEM_ESQ, y);
+	y += 6;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(FONT_TEXTO);
+	doc.setFont('helvetica', 'normal');
+	doc.setFontSize(FONT_TEXTO);
 
-  if (!dados.musicos.length) {
-    doc.text("Nenhum músico inscrito", MARGEM_ESQ, y);
-  } else {
-    dados.musicos.forEach((c) => {
-      const instNome = instrumentosService.obterNomeInstrumento(
-        c,
-        instrumentosMap,
-      );
+	if (!dados.musicos.length) {
+		doc.text('Nenhum músico inscrito', MARGEM_ESQ, y);
+	} else {
+		dados.musicos.forEach((c) => {
+			const instNome = instrumentosService.obterNomeInstrumento(c, instrumentosMap);
 
-      const texto = instNome ? `${c.nome} (${instNome})` : c.nome;
+			const texto = instNome ? `${c.nome} (${instNome})` : c.nome;
 
-      doc.text("• " + texto, MARGEM_ESQ + 2, y);
-      y += 5; //  antes era 6
+			doc.text('• ' + texto, MARGEM_ESQ + 2, y);
+			y += 5; //  antes era 6
 
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
-    });
-  }
+			if (y > 270) {
+				doc.addPage();
+				y = 20;
+			}
+		});
+	}
 
-  /* ================= SALVAR ================= */
-  const nomeArquivo = gerarNomeRelatorioPDF(dados);
-  doc.save(nomeArquivo);
-  liberarUI();
+	/* ================= SALVAR ================= */
+	const nomeArquivo = gerarNomeRelatorioPDF(dados);
+	doc.save(nomeArquivo);
+	liberarUI();
 }
 
 function gerarNomeRelatorioPDF(dados) {
-  const local = dados.local?.nome || "Local";
-  const data = dados.programacao?.data || "";
+	const local = dados.local?.nome || 'Local';
+	const data = dados.programacao?.data || '';
 
-  // formata data yyyy-mm-dd → dd/mm/yyyy
-  const dataFormatada = data ? data.split("-").reverse().join("/") : "";
+	// formata data yyyy-mm-dd → dd/mm/yyyy
+	const dataFormatada = data ? data.split('-').reverse().join('/') : '';
 
-  return `Relatório - ${local} - ${dataFormatada}.pdf`;
+	return `Relatório - ${local} - ${dataFormatada}.pdf`;
 }
 
 function gerarMensagemWhatsAppRelatorio(dados) {
-  const linhas = [];
+	const linhas = [];
 
-  linhas.push("*DARPE - Lençóis Paulista*");
-  linhas.push("_Relatório de Atendimento_");
-  linhas.push("");
-  linhas.push("> *Dados Gerais*");
-  linhas.push("");
-  linhas.push(`*Nome do Responsável:* _${dados.responsavel}_`);
-  linhas.push(`*Nome do Local:* _${dados.local?.nome || "-"}_`);
-  linhas.push(`*Data:* _${formatarData(dados.programacao?.data)}_`);
-  linhas.push(
-    `*Horário:* _${dados.programacao?.horario?.replace(/'/g, "") || "-"}_`,
-  );
+	linhas.push('*DARPE - Lençóis Paulista*');
+	linhas.push('_Relatório de Atendimento_');
+	linhas.push('');
+	linhas.push('> *Dados Gerais*');
+	linhas.push('');
+	linhas.push(`*Nome do Responsável:* _${dados.responsavel}_`);
+	linhas.push(`*Nome do Local:* _${dados.local?.nome || '-'}_`);
+	linhas.push(`*Data:* _${formatarData(dados.programacao?.data)}_`);
+	linhas.push(`*Horário:* _${dados.programacao?.horario?.replace(/'/g, '') || '-'}_`);
 
-  linhas.push(
-    `*Tipo de Visita:* _${dados.programacao?.tipo_visita} – ${dados.programacao?.descricao}_`,
-  );
+	linhas.push(
+		`*Tipo de Visita:* _${dados.programacao?.tipo_visita} – ${dados.programacao?.descricao}_`,
+	);
 
-  if (dados.qtdInternos > 0) {
-    linhas.push(`*Qtde. Internos:* _${dados.qtdInternos}_`);
-  }
+	if (dados.qtdInternos > 0) {
+		linhas.push(`*Qtde. Internos:* _${dados.qtdInternos}_`);
+	}
 
-  linhas.push(`*Qtde. Músicos:* _${dados.qtdMusicos}_`);
+	linhas.push(`*Qtde. Músicos:* _${dados.qtdMusicos}_`);
 
-  if (dados.qtdColaboradores > 0) {
-    linhas.push(`*Qtde. Colaboradores DARPE:* _${dados.qtdColaboradores}_`);
-  }
+	if (dados.qtdColaboradores > 0) {
+		linhas.push(`*Qtde. Colaboradores DARPE:* _${dados.qtdColaboradores}_`);
+	}
 
-  if (dados.evangelizacao?.palavra) {
-    linhas.push(`*Palavra:* _${dados.evangelizacao.palavra}_`);
-  }
+	if (dados.evangelizacao?.palavra) {
+		linhas.push(`*Palavra:* _${dados.evangelizacao.palavra}_`);
+	}
 
-  linhas.push("");
+	linhas.push('');
 
-  //  OBSERVAÇÕES
-  if (dados.observacoes?.trim()) {
-    linhas.push("> *Observações*");
-    linhas.push("");
-    linhas.push(`${dados.observacoes}`);
-  }
+	//  OBSERVAÇÕES
+	if (dados.observacoes?.trim()) {
+		linhas.push('> *Observações*');
+		linhas.push('');
+		linhas.push(`${dados.observacoes}`);
+	}
 
-  linhas.push("");
+	linhas.push('');
 
-  //  musicos
-  if (dados.musicos?.length) {
-    linhas.push("> *Nome/Instrumento dos Músicos*");
-    linhas.push("");
-    dados.musicos.forEach((c) => {
-      linhas.push(
-        `• _${c.nome}${c.instrumentoNome ? " (" + c.instrumentoNome + ")" : ""}_`,
-      );
-    });
-  }
-  linhas.push("");
-  return encodeURIComponent(linhas.join("\n"));
+	//  musicos
+	if (dados.musicos?.length) {
+		linhas.push('> *Nome/Instrumento dos Músicos*');
+		linhas.push('');
+		dados.musicos.forEach((c) => {
+			linhas.push(`• _${c.nome}${c.instrumentoNome ? ' (' + c.instrumentoNome + ')' : ''}_`);
+		});
+	}
+	linhas.push('');
+	return encodeURIComponent(linhas.join('\n'));
 }
 
 function enviarWhatsAppRelatorio() {
-  const dados = montarDadosRelatorio();
-  if (!dados) return;
+	const dados = montarDadosRelatorio();
+	if (!dados) return;
 
-  const mensagem = gerarMensagemWhatsAppRelatorio(dados);
+	const mensagem = gerarMensagemWhatsAppRelatorio(dados);
 
-  window.open(
-    `https://wa.me/?text=${mensagem}`,
-    "_blank",
-    "noopener,noreferrer",
-  );
+	window.open(`https://wa.me/?text=${mensagem}`, '_blank', 'noopener,noreferrer');
 }

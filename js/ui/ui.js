@@ -1,82 +1,80 @@
 function setTitle(text) {
-  document.getElementById("titulo").innerText = text;
+	document.getElementById('titulo').innerText = text;
 }
 
 async function showMenuInicial() {
-  window.adminAuth = {
-    authenticated: false,
-    token: null,
-  };
+	window.adminAuth = {
+		authenticated: false,
+		token: null,
+	};
 
-  mostrarBotaoAdmin();
-  setTitle("Página Inicial");
-  conteudo.innerHTML = Ui.Home();
+	mostrarBotaoAdmin();
+	setTitle('Página Inicial');
+	conteudo.innerHTML = Ui.Home();
 }
 
-const adminButton = document.getElementById("adminButton");
+const adminButton = document.getElementById('adminButton');
 
 function esconderBotaoAdmin() {
-  adminButton.style.display = "none";
+	adminButton.style.display = 'none';
 }
 
 function mostrarBotaoAdmin() {
-  adminButton.style.display = "inline-block";
+	adminButton.style.display = 'inline-block';
 }
 
 function copiarTexto(container = document) {
-  container.querySelectorAll(".copy-text").forEach((el) => {
-    el.addEventListener("click", () => {
-      const text = el.cloneNode(true);
-      text.querySelectorAll("i").forEach((i) => i.remove());
-      const valor = text.textContent.trim();
-      if (!valor) return;
+	container.querySelectorAll('.copy-text').forEach((el) => {
+		el.addEventListener('click', () => {
+			const text = el.cloneNode(true);
+			text.querySelectorAll('i').forEach((i) => i.remove());
+			const valor = text.textContent.trim();
+			if (!valor) return;
 
-      navigator.clipboard.writeText(valor).then(() => {
-        const localId = el.getAttribute("data-localid");
-        abrirModalMapa(localId);
-      });
-    });
-  });
+			navigator.clipboard.writeText(valor).then(() => {
+				const localId = el.getAttribute('data-localid');
+				abrirModalMapa(localId);
+			});
+		});
+	});
 }
 
 function abrirMapa(localId) {
-  let localObj = null;
+	let localObj = null;
 
-  // Tenta via Map (inscrições)
-  if (typeof locaisMap !== "undefined" && locaisMap[localId]) {
-    localObj = locaisMap[localId];
-  }
+	// Tenta via Map (inscrições)
+	if (typeof locaisMap !== 'undefined' && locaisMap[localId]) {
+		localObj = locaisMap[localId];
+	}
 
-  // Fallback via dataStore (programações)
-  if (!localObj && typeof _getLocalById === "function") {
-    localObj = _getLocalById(localId);
-  }
+	// Fallback via dataStore (programações)
+	if (!localObj && typeof _getLocalById === 'function') {
+		localObj = _getLocalById(localId);
+	}
 
-  if (!localObj) {
-    abrirModalAviso("Erro", "Endereço não encontrado");
-    return;
-  }
+	if (!localObj) {
+		abrirModalAviso('Erro', 'Endereço não encontrado');
+		return;
+	}
 
-  const endereco = encodeURIComponent(
-    localObj.endereco ?? "Endereço não informado",
-  );
+	const endereco = encodeURIComponent(localObj.endereco ?? 'Endereço não informado');
 
-  const url = `https://www.google.com/maps/search/?api=1&query=${endereco}`;
+	const url = `https://www.google.com/maps/search/?api=1&query=${endereco}`;
 
-  window.open(url, "_blank", "noopener");
+	window.open(url, '_blank', 'noopener');
 }
 
 function abrirWhatsApp(numero) {
-  const mensagem = `A Paz de Deus! Estou com uma dúvida sobre como utilizar o sistema de agendamentos do DARPE.`;
-  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "_blank", "noopener,noreferrer");
+	const mensagem = `A Paz de Deus! Estou com uma dúvida sobre como utilizar o sistema de agendamentos do DARPE.`;
+	const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+	window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 function mostrarLoading(containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
+	const el = document.getElementById(containerId);
+	if (!el) return;
 
-  el.innerHTML = `
+	el.innerHTML = `
     <div class="text-center my-4">
       <div class="spinner-border text-dark"></div>
     </div>
@@ -87,17 +85,17 @@ function mostrarLoading(containerId) {
 // ui-instrumentos.js como parte do sistema de tipos dinâmicos.
 
 function mostrarErroCampo(idErro, msg) {
-  const el = document.getElementById(idErro);
-  if (!el) return;
-  el.innerText = msg;
-  el.classList.remove("d-none");
+	const el = document.getElementById(idErro);
+	if (!el) return;
+	el.innerText = msg;
+	el.classList.remove('d-none');
 }
 
 function limparErroCampo(idErro) {
-  const el = document.getElementById(idErro);
-  if (!el) return;
-  el.innerText = "";
-  el.classList.add("d-none");
+	const el = document.getElementById(idErro);
+	if (!el) return;
+	el.innerText = '';
+	el.classList.add('d-none');
 }
 
 /* =============================================================
@@ -119,55 +117,55 @@ let _uiLockDepth = 0;
  * Inclui todos os padrões usados no sistema.
  */
 const _BTN_ACAO_SELETORES = [
-  // botões "Novo ..." de cada painel
-  "#novoLocalBtn",
-  "#novoInstrumentoBtn",
-  "#novaRegraBtn",
-  "#novaIntegracaoBtn",
-  "#novaProgramacaoBtn",
-  // ações inline de tabelas / cards
-  ".editar-btn",
-  ".excluir-btn",
-  ".compartilhar-btn",
-  ".editar-integracao-btn",
-  // botões de relatório
-  "#btnGerarPDF",
-  "#btnEnviarWhatsApp",
-  // botão confirmar presença (fluxo de inscrição)
-  "#btnConfirmar",
-  // botão de whatsapp na lista de inscritos
-  ".btn-whatsapp-share",
-].join(", ");
+	// botões "Novo ..." de cada painel
+	'#novoLocalBtn',
+	'#novoInstrumentoBtn',
+	'#novaRegraBtn',
+	'#novaIntegracaoBtn',
+	'#novaProgramacaoBtn',
+	// ações inline de tabelas / cards
+	'.editar-btn',
+	'.excluir-btn',
+	'.compartilhar-btn',
+	'.editar-integracao-btn',
+	// botões de relatório
+	'#btnGerarPDF',
+	'#btnEnviarWhatsApp',
+	// botão confirmar presença (fluxo de inscrição)
+	'#btnConfirmar',
+	// botão de whatsapp na lista de inscritos
+	'.btn-whatsapp-share',
+].join(', ');
 
 function travarUI() {
-  _uiLockDepth++;
-  if (_uiLockDepth > 1) return; // já travado
+	_uiLockDepth++;
+	if (_uiLockDepth > 1) return; // já travado
 
-  // Trava o botão Voltar
-  backButton.setAttribute("disabled", "");
-  backButton.classList.add("ui-locked");
+	// Trava o botão Voltar
+	backButton.setAttribute('disabled', '');
+	backButton.classList.add('ui-locked');
 
-  // Trava todos os botões de ação visíveis no #conteudo
-  document.querySelectorAll(_BTN_ACAO_SELETORES).forEach((b) => {
-    b.setAttribute("disabled", "");
-    b.classList.add("ui-locked");
-  });
+	// Trava todos os botões de ação visíveis no #conteudo
+	document.querySelectorAll(_BTN_ACAO_SELETORES).forEach((b) => {
+		b.setAttribute('disabled', '');
+		b.classList.add('ui-locked');
+	});
 }
 
 function liberarUI() {
-  if (_uiLockDepth <= 0) return;
-  _uiLockDepth--;
-  if (_uiLockDepth > 0) return; // ainda há chamadas aninhadas
+	if (_uiLockDepth <= 0) return;
+	_uiLockDepth--;
+	if (_uiLockDepth > 0) return; // ainda há chamadas aninhadas
 
-  // Libera backButton
-  backButton.removeAttribute("disabled");
-  backButton.classList.remove("ui-locked");
+	// Libera backButton
+	backButton.removeAttribute('disabled');
+	backButton.classList.remove('ui-locked');
 
-  // Libera todos os botões marcados
-  document.querySelectorAll(".ui-locked").forEach((b) => {
-    b.removeAttribute("disabled");
-    b.classList.remove("ui-locked");
-  });
+	// Libera todos os botões marcados
+	document.querySelectorAll('.ui-locked').forEach((b) => {
+		b.removeAttribute('disabled');
+		b.classList.remove('ui-locked');
+	});
 }
 
 /**
@@ -175,10 +173,10 @@ function liberarUI() {
  * Uso: await comUITravada(async () => { ... })
  */
 async function comUITravada(fn) {
-  travarUI();
-  try {
-    return await fn();
-  } finally {
-    liberarUI();
-  }
+	travarUI();
+	try {
+		return await fn();
+	} finally {
+		liberarUI();
+	}
 }

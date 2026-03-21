@@ -1,32 +1,30 @@
 async function mostrarAdmin() {
-  setTitle("Área Administrativa");
-  backButton.style.display = "block";
-  conteudo.innerHTML = Ui.PainelAdmin();
-  window.adminAuth.authenticated = true;
+	setTitle('Área Administrativa');
+	backButton.style.display = 'block';
+	conteudo.innerHTML = Ui.PainelAdmin();
+	window.adminAuth.authenticated = true;
 }
 
 function irParaTelaLocais() {
-  navigateTo(() => guardAdmin(abrirTelaLocais));
+	navigateTo(() => guardAdmin(abrirTelaLocais));
 }
 
 function irParaTelaInstrumentos() {
-  navigateTo(() => guardAdmin(abrirTelaInstrumentos));
+	navigateTo(() => guardAdmin(abrirTelaInstrumentos));
 }
 
 function irParaTelaRegrasDatas() {
-  navigateTo(() => guardAdmin(abrirTelaRegrasDatas));
+	navigateTo(() => guardAdmin(abrirTelaRegrasDatas));
 }
 
 function irParaTelaProgramacoes() {
-  navigateTo(() => guardAdmin(abrirTelaProgramacoes));
+	navigateTo(() => guardAdmin(abrirTelaProgramacoes));
 }
 
 function irParaTelaRelatorios() {
-  navigateTo(() => guardAdmin(abrirTelaRelatorios));
+	navigateTo(() => guardAdmin(abrirTelaRelatorios));
 }
 
 function irParaTelaIntegracoes() {
-  navigateTo(() => guardAdmin(abrirTelaIntegracoes));
+	navigateTo(() => guardAdmin(abrirTelaIntegracoes));
 }
-
-
