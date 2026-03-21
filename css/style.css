@@ -1684,6 +1684,10 @@ header .container {
   flex-shrink: 0;
 }
 
+.grade-escolha .btn:hover small {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
 /* ── Inscritos — accordion mais gordo ───────────────────── */
 .accordion-button {
   font-size: 1rem;
