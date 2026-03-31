@@ -88,14 +88,16 @@ function renderCardsIntegracoes(grupos) {
           <span>${nomeLocal}
           <span class="grupo-secao-count">Total: ${nomes.length}</span>
           </span>
-          <button class="btn btn-sm btn-outline-light ms-auto editar-integracao-btn"
+		  	<button class="btn btn-sm btn-outline-light ms-auto editar-integracao-btn editar-btn"
             onclick="abrirModalEditarIntegracao(${idLocal})">
-            <i class="bi bi-pencil me-1"></i>Editar
-          </button>
-          <button class="btn btn-sm btn-outline-danger ms-2"
+  				<i class="bi bi-pencil me-1"></i>
+  				<span class="btn-text">Editar</span>
+			</button>
+			<button class="btn btn-sm btn-outline-danger ms-2 excluir-btn"
             onclick="excluirIntegracao(${idLocal}, this)">
-            <i class="bi bi-trash-fill me-1"></i>Excluir
-          </button>
+  				<i class="bi bi-trash-fill me-1"></i>
+  				<span class="btn-text">Excluir</span>
+			</button>
         </div>
         <div class="d-flex flex-column gap-2">`;
 
@@ -115,10 +117,12 @@ function renderCardsIntegracoes(grupos) {
                   onclick="compartilharNomeIntegracao('${nomeEscaped}', this)"
                   title="Compartilhar link">
                   <i class="bi bi-share"></i>
+				  <span class="btn-text">Compartilhar</span>
                 </button>
                 <button class="btn btn-sm btn-outline-danger excluir-btn"
                   onclick="excluirNomeIntegracao(${n.id}, ${idLocal}, this)">
                   <i class="bi bi-trash"></i>
+				  <span class="btn-text">Excluir</span>
                 </button>
               </div>
             </div>

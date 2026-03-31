@@ -1991,6 +1991,24 @@ header .container {
 	gap: 0.4rem !important;
 }
 
+@media (max-width: 576px) {
+	.editar-btn .btn-text,
+	.excluir-btn .btn-text,
+	.compartilhar-btn .btn-text {
+		display: none;
+	}
+}
+
+.btn-youtube {
+	transition: transform 0.2s;
+}
+
+@media (hover: hover) {
+	.btn-youtube:hover {
+		transform: scale(1.02);
+	}
+}
+
 /* ── Chips de permissão ─────────────────────────────────── */
 .permissao-chip {
 	display: inline-flex;
