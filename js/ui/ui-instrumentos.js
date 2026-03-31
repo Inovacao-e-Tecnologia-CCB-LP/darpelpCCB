@@ -159,9 +159,11 @@ function renderCardsInstrumentos(instrumentos) {
               <div class="d-flex gap-2 flex-shrink-0">
                 <button class="btn btn-sm btn-outline-dark editar-btn" onclick="editarInstrumento(${i.id}, this)">
                   <i class="bi bi-pencil"></i>
+				  <span class="btn-text">Editar</span>
                 </button>
                 <button class="btn btn-sm btn-outline-danger excluir-btn" onclick="excluirInstrumento(${i.id}, this)">
                   <i class="bi bi-trash"></i>
+				  <span class="btn-text">Excluir</span>
                 </button>
               </div>
             </div>
