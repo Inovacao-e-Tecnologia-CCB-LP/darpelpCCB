@@ -92,9 +92,10 @@ function renderAccordionInscritos(grupos) {
 
             ${
 				auth
-					? `<button class="btn btn-sm btn-outline-danger"
+					? `<button class="btn btn-sm btn-outline-danger excluir-btn"
                     onclick="excluirInscricao(${i.id}, this)">
                     <i class="bi bi-trash"></i>
+					<span class="btn-text">Excluir</span>
                   </button>`
 					: ''
 			}

@@ -39,10 +39,10 @@ class UiComponents {
 			.then((text) => {
 				this.integracoes = text;
 			});
-		await fetch(`js/ui/components/trajes.html`)
+		await fetch(`js/ui/components/observacoes.html`)
 			.then((response) => response.text())
 			.then((text) => {
-				this.trajes = text;
+				this.observacoes = text;
 			});
 		await fetch(`js/ui/components/confirmar-presenca.html`)
 			.then((response) => response.text())
@@ -64,8 +64,8 @@ class UiComponents {
 		return this.confirmarPresenca;
 	}
 
-	ObservacaoTrajes() {
-		return this.trajes;
+	ModalObservacao() {
+		return this.observacoes;
 	}
 
 	PainelAdmin() {
