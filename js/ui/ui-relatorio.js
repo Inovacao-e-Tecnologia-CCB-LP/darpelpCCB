@@ -329,10 +329,11 @@ function carregarMusicosRelatorio(programacaoId) {
     <span>${i.nome}${instNome ? ` (${instNome})` : ''}</span>
     <button 
       type="button"
-      class="btn btn-sm btn-outline-danger ms-2"
-      title="Remover"
+      class="btn btn-sm btn-outline-danger excluir-btn ms-2"
+      title="Excluir"
     >
-      <i class="bi bi-trash"></i>
+        <i class="bi bi-trash"></i>
+		<span class="btn-text">Excluir</span>
     </button>
   `;
 
@@ -367,7 +368,10 @@ function carregarMusicosRelatorio(programacaoId) {
 	const btnAdicionar = document.createElement('button');
 	btnAdicionar.type = 'button';
 	btnAdicionar.className = 'btn btn-outline-primary btn-sm mt-2';
-	btnAdicionar.innerHTML = '<i class="bi bi-plus"></i> Adicionar';
+	btnAdicionar.innerHTML = `
+	                    <i class="bi bi-plus"></i>
+					<span class="btn-text">Adicionar</span>
+`;
 
 	btnAdicionar.onclick = (e) => {
 		e.stopPropagation();

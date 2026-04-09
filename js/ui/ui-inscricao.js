@@ -112,10 +112,10 @@ function showEscolherData() {
 
 	if (programacoesFiltradas.length === 0) {
 		conteudo.innerHTML = `
-        <div class="alert alert-secondary text-center">
-          Nenhuma data disponível para este local
-        </div>
-      `;
+			<div class="alert alert-secondary text-center">
+				Nenhuma data disponível para este local
+			</div>
+		`;
 		return;
 	}
 
@@ -134,12 +134,12 @@ function showEscolherData() {
 		const icone = iconesTipoVisita[p.tipo_visita] || 'bi bi-calendar-event';
 
 		btn.innerHTML = `
-    <i class="${icone}"></i>
-    <span>
-      <strong>${p.tipo_visita} &bull; ${formatarData(p.data)} </strong><br>
-      <small class="text-muted">${p.descricao} &bull; ${formatarHorario(p.horario)}</small>
-    </span>
-  `;
+			<i class="${icone}"></i>
+			<span>
+				<strong>${p.tipo_visita} &bull; ${formatarData(p.data)} </strong><br>
+				<small class="text-muted">${p.descricao} &bull; ${formatarHorario(p.horario)}</small>
+			</span>
+		`;
 
 		btn.style.alignItems = 'flex-start';
 		btn.onclick = () => selecionarData(p);
@@ -147,13 +147,12 @@ function showEscolherData() {
 		g.appendChild(btn);
 	});
 
-	const obs = document.createElement('div');
-	obs.className = 'traje-card col-12 col-sm-10 col-md-8 mx-auto';
-	obs.innerHTML = Ui.ObservacaoTrajes();
+	const wrapper = document.createElement('div');
+	wrapper.innerHTML = Ui.ModalObservacao();
+	g.appendChild(wrapper.firstElementChild);
 
 	conteudo.innerHTML = '';
 	conteudo.appendChild(g);
-	conteudo.appendChild(obs);
 }
 
 function showEscolherInstrumento() {
