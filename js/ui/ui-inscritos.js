@@ -198,7 +198,7 @@ function compartilhar(pid) {
 
 	const inscritosProg = inscritosPorProgramacao[pid] || [];
 
-	const dataFormatada = new Date(p.data).toLocaleDateString('pt-BR');
+	const dataFormatada = formatarData(p.data);
 
 	let mensagem = `*${localObj.nome}*\n\n`;
 	mensagem += ` _${localObj.endereco}_\n`;
