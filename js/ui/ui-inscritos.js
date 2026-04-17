@@ -80,6 +80,7 @@ function renderAccordionInscritos(grupos) {
 
 			inscritosLista.forEach((i) => {
 				const auth = localStorageService.buscarAutorizacao(i.id);
+				const podeExcluir = auth && auth.token === i.delete_token;
 
 				const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
 
@@ -91,7 +92,7 @@ function renderAccordionInscritos(grupos) {
             </span>
 
             ${
-				auth
+				podeExcluir
 					? `<button class="btn btn-sm btn-outline-danger excluir-btn"
                     onclick="excluirInscricao(${i.id}, this)">
                     <i class="bi bi-trash"></i>
@@ -173,6 +174,48 @@ async function showInscritos() {
       </div>`;
 	} finally {
 		liberarUI();
+	}
+}
+
+/* =========================
+   EXCLUIR INSCRIÇÕES
+========================= */
+
+async function excluirInscricao(id, btn) {
+	const auth = localStorageService.buscarAutorizacao(id);
+
+	if (!auth) {
+		abrirModalAviso('Erro', 'Você não tem permissão para excluir esta inscrição');
+		return;
+	}
+
+	const confirmou = await abrirModalConfirmacao(
+		'Deseja realmente excluir esta inscrição?',
+		'Excluir',
+	);
+	if (!confirmou) return;
+
+	const originalHTML = btn.innerHTML;
+	const originalClass = btn.className;
+
+	btn.disabled = true;
+	btn.className = 'btn btn-sm btn-danger';
+	btn.innerHTML = '<span class="spinner-border spinner-border-sm text-light"></span>';
+
+	try {
+		const r = await inscricoesService.excluir(id, auth.token);
+
+		if (!r?.success) throw r;
+
+		localStorageService.removerAutorizacao(id);
+		abrirModalAviso('Sucesso', 'Inscrição excluída com sucesso');
+		showInscritos();
+	} catch (e) {
+		console.error(e);
+		abrirModalAviso('Erro', 'Erro ao excluir inscrição');
+	} finally {
+		btn.disabled = false;
+		btn.innerHTML = originalHTML;
 	}
 }
 

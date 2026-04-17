@@ -33,6 +33,24 @@ class LocalStorageService {
 		}
 	}
 
+	validarAutorizacao(id, tokenBackend) {
+		try {
+			const lista = JSON.parse(localStorage.getItem(this.LS_KEY)) || [];
+			const item = lista.find((i) => i.id === id);
+
+			if (!item) return false;
+
+			// Se tiver token backend, valida também
+			if (tokenBackend && item.token !== tokenBackend) {
+				return false;
+			}
+
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
+
 	// ── Nome do usuario ──────────────────────────────────────────────────────
 
 	/**
