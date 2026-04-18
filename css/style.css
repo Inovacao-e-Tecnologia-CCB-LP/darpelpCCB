@@ -1487,6 +1487,11 @@ header .container {
 	margin-top: 0.1rem;
 }
 
+.cal-inscricao-texto {
+	color: #343a40;
+	font-weight: 400;
+}
+
 /* ===========================
    LINK MAPA
 =========================== */

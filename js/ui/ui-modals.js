@@ -154,6 +154,39 @@ function abrirModalConfirmacao(mensagem, textoBotao = 'Confirmar') {
 	});
 }
 
+function abrirModalConfirmacaoNormal(mensagem, textoBotao = 'Confirmar') {
+	return new Promise(async (resolve) => {
+		await _aguardarFechamentoModal();
+
+		const modalEl = document.getElementById('confirmModalNormal');
+		const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+		document.getElementById('confirmMessageNormal').innerText = mensagem;
+		document.getElementById('confirmOkNormal').innerText = textoBotao;
+
+		const btnOk = document.getElementById('confirmOkNormal');
+
+		const confirmar = () => {
+			btnOk.removeEventListener('click', confirmar);
+			modal.hide();
+			resolve(true);
+		};
+
+		btnOk.addEventListener('click', confirmar);
+
+		modalEl.addEventListener(
+			'hidden.bs.modal',
+			() => {
+				btnOk.removeEventListener('click', confirmar);
+				resolve(false);
+			},
+			{ once: true },
+		);
+
+		modal.show();
+	});
+}
+
 /* ================================================
    MODAL DE MAPA / ENDEREÇO
 ================================================ */
