@@ -524,10 +524,16 @@ async function salvarInscricao(btnEl) {
 		localStorageService.salvarNome(nome);
 	}
 
+	const btnVoltarHome = document.getElementById('btnVoltarHome');
+
 	const originalHTML = btn ? btn.innerHTML : '';
 	if (btn) {
 		btn.disabled = true;
 		btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Salvando...';
+	}
+
+	if (btnVoltarHome) {
+		btnVoltarHome.disabled = true;
 	}
 
 	const payload = {

@@ -80,6 +80,20 @@ function resetAndGoHome() {
 	navigateTo(showMenuInicial);
 }
 
+async function resetAndGoHomeWithConfirmation() {
+	const ok = await abrirModalConfirmacaoNormal(
+		'Tem certeza que deseja voltar para a tela inicial?',
+		'Sim',
+	);
+
+	if (!ok) return;
+
+	abortController?.abort();
+	escolha = {};
+	navigationStack.length = 0;
+	navigateTo(showMenuInicial);
+}
+
 // ================================
 // Foco global para todas as modais
 // ================================

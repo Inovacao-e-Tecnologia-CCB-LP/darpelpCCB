@@ -178,7 +178,7 @@ async function abrirTelaCalendarioPublico() {
 	conteudo.innerHTML = Ui.PainelProgramacoes();
 	_calModoSomenteLeitura = true;
 	await carregarProgramacoes(true);
-	const btnNova = document.getElementById('novaProgramacaoBtn'); // Esconde botão Nova Programação
+	const btnNova = document.getElementById('novaProgramacaoBtn');
 	if (btnNova) btnNova.remove();
 }
 
@@ -186,6 +186,8 @@ async function abrirTelaCalendarioPublico() {
    LISTAGEM
 ========================= */
 async function carregarProgramacoes(firstTime = false) {
+	const btnNova = document.getElementById('novaProgramacaoBtn');
+	if (btnNova) btnNova.style.display = 'none';
 	travarUI();
 	try {
 		mostrarLoading('listaProgramacoes');
@@ -193,6 +195,21 @@ async function carregarProgramacoes(firstTime = false) {
 		let programacao = firstTime ? dataStore.programacao : await programacaoService.listar();
 
 		if (programacao?.error) throw new Error(programacao.error);
+
+		if (_calModoSomenteLeitura) {
+			const inscritos = await inscricoesService.listar();
+
+			const estrutura = inscricoesService.montarEstrutura(
+				inscritos,
+				dataStore.locais,
+				dataStore.programacao,
+				dataStore.instrumentos || [],
+			);
+
+			dataStore.inscricoes = inscritos;
+			instrumentosMap = estrutura.instrumentosMap;
+			estruturaInscritos = estrutura;
+		}
 
 		programacao = programacao || [];
 		dataStore.programacao = programacao;
@@ -222,6 +239,11 @@ async function carregarProgramacoes(firstTime = false) {
       </div>`;
 	} finally {
 		liberarUI();
+
+		const btnNova = document.getElementById('novaProgramacaoBtn');
+		if (btnNova && !_calModoSomenteLeitura) {
+			btnNova.style.display = '';
+		}
 	}
 }
 
@@ -442,32 +464,47 @@ function _renderMiniNav() {
 	return `<div class="cal-pills">${pills}</div>`;
 }
 
-function _renderAcoesPublico() {
+function _renderAcoesCompartilhamento({
+	contexto = 'calendario',
+	programacaoId = null,
+	dia = null,
+} = {}) {
+	const isModal = contexto === 'modal';
+
+	const acaoImagem = isModal ? '_baixarImagemModal()' : '_baixarImagemCalendario()';
+	const acaoPdf = isModal ? '_baixarPdfModal()' : '_baixarPdfCalendario()';
+
 	return `
-    <div class="mt-4 cal-acoes-publico no-print">
-      <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+	<div class="mt-4 cal-acoes-publico no-print">
+		<div class="d-flex flex-column flex-md-row gap-2 ${isModal ? '' : 'justify-content-md-end'}">
 
-        <button class="btn btn-primary w-100 w-md-auto"
-          onclick="_baixarImagemCalendario()">
-          <i class="bi bi-image me-1"></i>
-          Gerar imagem
-        </button>
+			<button class="btn btn-primary w-100 ${isModal ? '' : 'w-md-auto'}"
+				onclick="${acaoImagem}">
+				<i class="bi bi-image me-1"></i>
+				Gerar imagem
+			</button>
 
-        <button class="btn btn-secondary w-100 w-md-auto"
-          onclick="_baixarPdfCalendario()">
-          <i class="bi bi-file-earmark-pdf me-1"></i>
-          Gerar PDF
-        </button>
+			<button class="btn btn-secondary w-100 ${isModal ? '' : 'w-md-auto'}"
+				onclick="${acaoPdf}">
+				<i class="bi bi-file-earmark-pdf me-1"></i>
+				Gerar PDF
+			</button>
 
-        <button class="btn btn-success w-100 w-md-auto"
-          onclick="_compartilharWhatsapp()">
-          <i class="bi bi-whatsapp me-1"></i>
-          Compartilhar
-        </button>
+			<button class="btn btn-success w-100 ${isModal ? '' : 'w-md-auto'}"
+				onclick="_compartilharWhatsapp('${contexto}', ${dia})">
+				<i class="bi bi-whatsapp me-1"></i>
+				Compartilhar
+			</button>
 
-      </div>
-    </div>
-  `;
+		</div>
+	</div>
+	`;
+}
+
+function _renderAcoesPublico() {
+	return _renderAcoesCompartilhamento({
+		contexto: 'calendario',
+	});
 }
 
 /* =========================
@@ -537,6 +574,7 @@ function _abrirDetalhesDia(dia, eventosJson) {
 
 	const cards = eventos
 		.map((p) => {
+			const inscricoes = _calModoSomenteLeitura ? _getInscricoesPorProgramacao(p.id) : [];
 			const local = _getLocalById(p.local_id);
 			const dataProg = new Date(p.data + 'T12:00:00').toLocaleDateString('pt-BR', {
 				day: '2-digit',
@@ -548,6 +586,47 @@ function _abrirDetalhesDia(dia, eventosJson) {
 				? 'music-note-beamed'
 				: 'book';
 			const cor = _getCorLocal(p.local_id);
+
+			// ===== INSCRIÇÕES =====
+			const inscricoesHtml = _calModoSomenteLeitura
+				? inscricoes.length
+					? `
+<div class="cal-det-row align-items-start mt-2" style="color:${cor.text}; border-top:1px solid ${cor.border}55;">
+	<div class="w-100 mt-2">
+		<i class="bi bi-people-fill mt-1" style="color:${cor.dot}"></i>
+		<span class="fw-bold">Inscrições</span>
+		<ul class="list-unstyled mb-0">
+			${inscricoes
+				.map((i) => {
+					const nomeInstrumento = instrumentosService.obterNomeInstrumento(
+						i,
+						instrumentosMap,
+					);
+					return `
+<li class="d-flex justify-content-between align-items-center py-1">
+	<div class="d-flex flex-column">
+		<span class="cal-inscricao-texto">• ${i.nome} (${nomeInstrumento})</span>
+	</div>
+
+	<span class="badge rounded-pill" 
+	      style="background:${cor.dot}22; color:${cor.dot}; font-size:11px;">
+		${formatarData(i.data)}
+	</span>
+</li>
+`;
+				})
+				.join('')}
+		</ul>
+	</div>
+</div>
+`
+					: `
+<div class="cal-det-row">
+	<i class="bi bi-people" style="color:${cor.dot}"></i>
+	<span class="text-muted">Nenhuma inscrição para esta programação</span>
+</div>
+`
+				: '';
 
 			return `
       <div class="cal-det-card" style="background:${cor.bgCard}; border:1.5px solid ${cor.border};">
@@ -565,6 +644,10 @@ function _abrirDetalhesDia(dia, eventosJson) {
               ${local?.endereco ?? 'Endereço não informado'}
               </p>
           </div>
+		    <div class="cal-det-row">
+            <i class="bi bi-calendar-event" style="color:${cor.dot}"></i>
+            <span>${formatarData(p.data) || '-'}</span>
+          </div>
           <div class="cal-det-row">
             <i class="bi bi-clock-fill" style="color:${cor.dot}"></i>
             <span>${formatarHorario(p.horario) || '-'}</span>
@@ -573,6 +656,9 @@ function _abrirDetalhesDia(dia, eventosJson) {
             <i class="bi bi-${tipoIcon}" style="color:${cor.dot}"></i>
             <span>${tipo}</span>
         </div>
+
+		          <!-- INSCRIÇÕES -->
+          ${inscricoesHtml}
       </div>
       ${
 			!_calModoSomenteLeitura
@@ -602,7 +688,18 @@ function _abrirDetalhesDia(dia, eventosJson) {
   </div>`
 		: '';
 
-	const eventosHtml = cards + botaoNovo;
+	let acoesPublicoModal = '';
+
+	if (_calModoSomenteLeitura) {
+		const primeiroEventoId = eventos[0]?.id;
+
+		acoesPublicoModal = _renderAcoesCompartilhamento({
+			contexto: 'modal',
+			dia: dia,
+		});
+	}
+
+	const eventosHtml = cards + botaoNovo + acoesPublicoModal;
 
 	document.getElementById('calDetData').innerHTML = `${_capitalizar(dataFmt)}`;
 	document.getElementById('calDetBody').innerHTML = eventosHtml;
@@ -650,6 +747,25 @@ async function _baixarImagemCalendario() {
 	link.click();
 }
 
+async function _baixarImagemModal() {
+	const elemento = document.getElementById('calDetBody');
+
+	elemento.classList.add('exportando');
+
+	const canvas = await html2canvas(elemento, {
+		scale: 2,
+		backgroundColor: '#ffffff',
+		ignoreElements: (el) => el.classList?.contains('no-print'),
+	});
+
+	elemento.classList.remove('exportando');
+
+	const link = document.createElement('a');
+	link.download = 'detalhes_programacao.png';
+	link.href = canvas.toDataURL('image/png');
+	link.click();
+}
+
 async function _baixarPdfCalendario() {
 	const elemento = document.querySelector('.cal-wrapper');
 
@@ -671,21 +787,52 @@ async function _baixarPdfCalendario() {
 	pdf.save('calendarioMensalDARPE.pdf');
 }
 
-function _compartilharWhatsapp() {
-	if (!_calMeses.length) return;
+async function _baixarPdfModal() {
+	const elemento = document.getElementById('calDetBody');
 
-	const { ano, mes } = _calMeses[_calIdx];
+	elemento.classList.add('exportando');
 
-	const nomeMes = new Date(ano, mes, 1).toLocaleDateString('pt-BR', {
-		month: 'long',
-		year: 'numeric',
+	const canvas = await html2canvas(elemento, {
+		scale: 2,
+		backgroundColor: '#ffffff',
+		ignoreElements: (el) => el.classList?.contains('no-print'),
 	});
 
-	const mensagem = `Calendário DARPE(Lençóis Paulista) - ${_capitalizar(nomeMes)}`;
+	elemento.classList.remove('exportando');
+
+	const imgData = canvas.toDataURL('image/png');
+
+	const { jsPDF } = window.jspdf;
+	const pdf = new jsPDF('p', 'mm', 'a4');
+
+	const largura = 210;
+	const altura = (canvas.height * largura) / canvas.width;
+
+	pdf.addImage(imgData, 'PNG', 0, 10, largura, altura);
+	pdf.save('detalhes_programacao.pdf');
+}
+
+function _compartilharWhatsapp(contexto = 'calendario', dia = null) {
+	if (!_calMeses.length) return;
+
+	let mensagem = '';
+
+	if (contexto === 'modal' && dia !== null) {
+		const { ano, mes } = _calMeses[_calIdx];
+		const dataSelecionada = new Date(ano, mes, dia);
+		const dataStr = dataSelecionada.toISOString().split('T')[0];
+		mensagem = `Programação DARPE (Lençóis Paulista) - ${formatarData(dataStr)}`;
+	} else {
+		const { ano, mes } = _calMeses[_calIdx];
+		const nomeMes = new Date(ano, mes, 1).toLocaleDateString('pt-BR', {
+			month: 'long',
+			year: 'numeric',
+		});
+		mensagem = `Calendário DARPE (Lençóis Paulista) - ${_capitalizar(nomeMes)}`;
+	}
 
 	const url = `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
-
-	window.open(url, '_blank');
+	window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 /* =========================
@@ -707,7 +854,7 @@ function _abrirModalProgramacao(programacao = null) {
 		selectLocal.appendChild(opt);
 	});
 
-	// 🔹 Define hoje antes de usar
+	// Define hoje antes de usar
 	const inputData = document.getElementById('progData');
 	const hoje = new Date();
 	const hojeStr = hoje.toISOString().split('T')[0];
@@ -954,10 +1101,6 @@ async function _capturarCalendario() {
 	return canvas;
 }
 
-function _capitalizar(str) {
-	return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
-}
-
 function _hashId(id) {
 	let hash = 0;
 	const str = String(id);
@@ -968,4 +1111,10 @@ function _hashId(id) {
 	}
 
 	return Math.abs(hash);
+}
+
+function _getInscricoesPorProgramacao(programacaoId) {
+	return (dataStore.inscricoes || []).filter(
+		(i) => String(i.programacao_id) === String(programacaoId),
+	);
 }

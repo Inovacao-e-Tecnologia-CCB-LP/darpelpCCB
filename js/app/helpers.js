@@ -9,6 +9,10 @@ function formatarHorario(horario) {
 	return horario;
 }
 
+function _capitalizar(str) {
+	return str ? str.charAt(0).toUpperCase() + str.slice(1) : str;
+}
+
 function isMobile() {
 	return window.innerWidth < 768;
 }
