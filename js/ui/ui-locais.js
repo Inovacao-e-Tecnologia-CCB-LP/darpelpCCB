@@ -89,7 +89,7 @@ function renderCardsLocais(locais) {
 		const especificosHtml = resumo
 			? `<div class="card-info-row">
            <i class="bi bi-music-note-list"></i>
-           <span class="text-muted small">Específicos:</span>
+           <span class="text-muted small text-nowrap">Específicos:</span>
            <div class="d-flex flex-wrap gap-1 ms-1">${resumo
 				.split(', ')
 				.map((n) => `<span class="badge-instrumento">${n}</span>`)
@@ -118,7 +118,7 @@ function renderCardsLocais(locais) {
           ${especificosHtml}
         </div>
         <div class="item-card-actions">
-          <button class="btn btn-outline-dark editar-btn" onclick="editarLocal(${l.id}, this)">
+          <button class="btn btn-outline-primary editar-btn" onclick="editarLocal(${l.id}, this)">
             <i class="bi bi-pencil me-1"></i>Editar
           </button>
           <button class="btn btn-outline-danger excluir-btn" onclick="excluirLocal(${l.id}, this)">

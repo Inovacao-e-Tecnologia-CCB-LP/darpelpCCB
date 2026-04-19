@@ -172,7 +172,19 @@
 								placeholder="Ex: Rua das Flores, 123 - Centro"
 								data-input-filter="endereco"
 							/>
-							<small class="text-muted"> Informe o endereço completo do local </small>
+							<small class="text-muted">Informe o endereço completo do local</small>
+						</div>
+
+						<!-- LIMITE -->
+						<div class="mb-3">
+							<label class="form-label">Limite de músicos no local</label>
+							<input
+								type="number"
+								class="form-control"
+								id="localLimite"
+								min="0"
+								data-input-filter="numero"
+							/>
 						</div>
 
 						<!-- PERMITE CORDAS -->
@@ -237,7 +249,7 @@
 							<div class="d-flex align-items-center gap-2 flex-wrap">
 								<button
 									type="button"
-									class="btn btn-outline-dark btn-sm"
+									class="btn btn-outline-primary btn-sm"
 									onclick="abrirModalInstrumentosEspecificos()"
 								>
 									<i class="bi bi-music-note-list me-1"></i> Gerenciar
@@ -252,18 +264,6 @@
 							</div>
 						</div>
 
-						<!-- LIMITE -->
-						<div class="mb-3">
-							<label class="form-label">Limite de pessoas do Local</label>
-							<input
-								type="number"
-								class="form-control"
-								id="localLimite"
-								min="0"
-								data-input-filter="numero"
-							/>
-						</div>
-
 						<div
 							id="erroValidacaoCamposLocal"
 							class="text-danger mt-1 d-none"
@@ -272,7 +272,11 @@
 					</div>
 
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
 							Cancelar
 						</button>
 
@@ -309,7 +313,11 @@
 						</div>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
 							Cancelar
 						</button>
 						<button
@@ -317,7 +325,7 @@
 							class="btn btn-dark"
 							onclick="confirmarInstrumentosEspecificos()"
 						>
-							<i class="bi bi-check2 me-1"></i> Confirmar
+							Confirmar
 						</button>
 					</div>
 				</div>
@@ -371,11 +379,11 @@
 							<!-- Opção de criar novo tipo -->
 							<button
 								type="button"
-								class="btn btn-outline-secondary btn-sm"
+								class="btn btn-outline-primary btn-sm"
 								id="btnNovoTipo"
 								onclick="toggleNovoTipo()"
 							>
-								<i class="bi bi-plus-circle me-1"></i> Novo tipo
+								<i class="bi bi-plus-lg me-1"></i> Novo tipo
 							</button>
 
 							<div id="novoTipoContainer" class="d-none mt-2">
@@ -394,14 +402,14 @@
 										"
 									/>
 									<button
-										class="btn btn-dark"
+										class="btn btn-primary"
 										type="button"
 										onclick="confirmarNovoTipo()"
 									>
 										<i class="bi bi-check-lg"></i>
 									</button>
 									<button
-										class="btn btn-outline-secondary"
+										class="btn btn-outline-danger"
 										type="button"
 										onclick="cancelarNovoTipo()"
 									>
@@ -424,7 +432,11 @@
 					</div>
 
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
 							Cancelar
 						</button>
 
@@ -711,11 +723,11 @@
 									"
 								/>
 								<button
-									class="btn btn-outline-dark"
+									class="btn btn-primary"
 									type="button"
 									onclick="adicionarNomeIntegracao()"
 								>
-									Adicionar
+									<i class="bi bi-plus-lg"></i> Adicionar
 								</button>
 							</div>
 							<div
@@ -738,7 +750,11 @@
 					</div>
 
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
 							Cancelar
 						</button>
 						<button
@@ -920,7 +936,11 @@
 					</div>
 					<div class="modal-body" id="confirmMessage">Tem certeza?</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
 							Cancelar
 						</button>
 						<button type="button" class="btn btn-danger" id="confirmOk">Excluir</button>
@@ -943,11 +963,51 @@
 					</div>
 					<div class="modal-body" id="confirmMessageNormal">Tem certeza?</div>
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
 							Cancelar
 						</button>
 						<button type="button" class="btn btn-dark" id="confirmOkNormal">
 							Excluir
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Modal Escolha Tipo de Link -->
+		<div class="modal fade" id="modalEscolhaLink" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header bg-dark text-white">
+						<h5 class="modal-title">Compartilhar link</h5>
+						<button
+							type="button"
+							class="btn-close btn-close-white"
+							data-bs-dismiss="modal"
+						></button>
+					</div>
+
+					<div class="modal-body">Escolha o tipo de link que deseja compartilhar:</div>
+
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
+							Cancelar
+						</button>
+
+						<button type="button" class="btn btn-primary" id="btnLinkTemporario">
+							<i class="bi bi-clock me-1"></i> Temporário
+						</button>
+
+						<button type="button" class="btn btn-dark" id="btnLinkPermanente">
+							<i class="bi bi-link-45deg me-1"></i> Permanente
 						</button>
 					</div>
 				</div>

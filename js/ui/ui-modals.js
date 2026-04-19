@@ -202,6 +202,49 @@ async function abrirModalMapa(localId) {
 }
 
 /* ================================================
+   MODAL DE COMPARTILHAR LINK
+================================================ */
+function abrirModalEscolhaLink() {
+	return new Promise(async (resolve) => {
+		await _aguardarFechamentoModal();
+
+		const modalEl = document.getElementById('modalEscolhaLink');
+		const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+		const btnTemp = document.getElementById('btnLinkTemporario');
+		const btnPerm = document.getElementById('btnLinkPermanente');
+
+		const limparEventos = () => {
+			btnTemp.onclick = null;
+			btnPerm.onclick = null;
+		};
+
+		btnTemp.onclick = () => {
+			limparEventos();
+			modal.hide();
+			resolve('temporario');
+		};
+
+		btnPerm.onclick = () => {
+			limparEventos();
+			modal.hide();
+			resolve('permanente');
+		};
+
+		modalEl.addEventListener(
+			'hidden.bs.modal',
+			() => {
+				limparEventos();
+				resolve(null);
+			},
+			{ once: true },
+		);
+
+		modal.show();
+	});
+}
+
+/* ================================================
    REGISTRA CANCELAMENTO EM TODOS OS MODAIS
    Ao clicar em Cancelar ou fechar (X) qualquer
    modal que esteja em loading → aborta operação.
