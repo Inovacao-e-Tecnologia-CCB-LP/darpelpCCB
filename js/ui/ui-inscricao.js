@@ -12,7 +12,7 @@ async function showEscolherLocal() {
 
 	// ── Resolver nome de integração ────────────────────────────────────────────
 	// Prioridade: ?nome= da URL (já capturado em nomeIntegracao) → localStorage
-	const nomeIntegracaoAtivo = nomeIntegracao || localStorage.getItem('nome_integracao');
+	const nomeIntegracaoAtivo = nomeIntegracao;
 
 	// IDs de TODOS os locais vinculados a este nome (pode ser mais de um)
 	let idsLocaisIntegracao = [];
@@ -271,7 +271,7 @@ async function showConfirmar() {
 	_confirmarModo = null;
 	_nomeSelecionadoIntegracao = null;
 
-	const nomeIntegracaoAtivo = nomeIntegracao || localStorage.getItem('nome_integracao');
+	const nomeIntegracaoAtivo = nomeIntegracao;
 	const localTemIntegracao =
 		escolha.local?.integracoes === true ||
 		String(escolha.local?.integracoes).toUpperCase() === 'TRUE';
@@ -348,7 +348,7 @@ function _renderConfirmarIntegracaoComNome(nome) {
             <i class="bi bi-check2-circle me-2"></i>Confirmar
           </button>
           <button type="button" class="btn btn-outline-dark btn-lg" onclick="_showListaNomesIntegracao()">
-            <i class="bi bi-person-plus me-2"></i>Cadastrar novo nome
+            <i class="bi bi-person-plus me-2"></i>Escolher outro nome
           </button>
         </div>
       </div>
@@ -430,9 +430,6 @@ async function _showListaNomesIntegracao() {
 function _selecionarNomeIntegracao(nome, grid) {
 	_nomeSelecionadoIntegracao = nome;
 
-	// Salva imediatamente como nome_integracao permanente neste navegador
-	localStorage.setItem('nome_integracao', nome);
-
 	// Atualiza visual dos botões
 	grid.querySelectorAll('button[data-nome]').forEach((b) => {
 		const ativo = b.dataset.nome === nome;
@@ -446,7 +443,7 @@ function _selecionarNomeIntegracao(nome, grid) {
 
 // Chamado quando usuário clica "Usar este nome" (cenários A e B)
 function usarNomeSalvo(btn) {
-	const nomeIntegracaoAtivo = nomeIntegracao || localStorage.getItem('nome_integracao');
+	const nomeIntegracaoAtivo = nomeIntegracao;
 	// Cenário A: usa nome de integração
 	if (nomeIntegracaoAtivo && _confirmarModo === 'nome_salvo') {
 		salvarInscricao(btn || null);
@@ -479,7 +476,7 @@ async function salvarInscricao(btnEl) {
 	// Aceita o botão passado diretamente (ex: usarNomeSalvo) ou busca pelo id
 	const btn = btnEl || document.getElementById('btnConfirmar');
 
-	const nomeIntegracaoAtivo = nomeIntegracao || localStorage.getItem('nome_integracao');
+	const nomeIntegracaoAtivo = nomeIntegracao;
 	const localTemIntegracao =
 		escolha.local?.integracoes === true ||
 		String(escolha.local?.integracoes).toUpperCase() === 'TRUE';

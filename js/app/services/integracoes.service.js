@@ -27,8 +27,10 @@ class IntegracoesService {
 	}
 
 	/** https://dominio/?nome=João%20Silva&exp=<timestamp+24h> */
+
 	_linkTemporario(nome) {
-		const exp = Date.now() + 24 * 60 * 60 * 1000;
+		const DIAS_EXPIRACAO = 14;
+		const exp = Date.now() + DIAS_EXPIRACAO * 24 * 60 * 60 * 1000;
 		return `${this._baseUrl()}/?nome=${encodeURIComponent(nome)}&exp=${exp}`;
 	}
 
@@ -115,6 +117,35 @@ class IntegracoesService {
 		}
 	}
 
+	async compartilharTemporario(nome) {
+		const link = this._linkTemporario(nome);
+		return this._executarCompartilhamento(link, nome);
+	}
+
+	async compartilharPermanente(nome) {
+		const link = this._linkPermanente(nome);
+		return this._executarCompartilhamento(link, nome);
+	}
+
+	async _executarCompartilhamento(link, nome) {
+		try {
+			if (navigator.share) {
+				await navigator.share({ title: 'Integração – ' + nome, url: link });
+			} else {
+				await navigator.clipboard.writeText(link);
+				abrirModalAviso(
+					'Sucesso',
+					`O link foi copiado para a área de transferência\n\n${link}`,
+				);
+			}
+		} catch (err) {
+			if (err?.name !== 'AbortError') {
+				console.warn('compartilhar:', err);
+				window.prompt('Copie o link abaixo:', link);
+			}
+		}
+	}
+
 	// ─── Captura de URL de entrada ─────────────────────────────────────────────
 
 	/**
@@ -127,7 +158,11 @@ class IntegracoesService {
 		const params = new URLSearchParams(window.location.search);
 		const nomeRaw = params.get('nome');
 
-		if (!nomeRaw) return null;
+		// Se não veio nome na URL, limpa integração
+		if (!nomeRaw) {
+			localStorage.removeItem('nome_integracao');
+			return null;
+		}
 
 		// Validar expiração (link temporário)
 		const expRaw = params.get('exp');
@@ -140,15 +175,16 @@ class IntegracoesService {
 						'Link expirado, solicite um novo ao responsável pela integração',
 					);
 				}, 500);
+
+				// Se o link estiver expirado, também limpa integração
+				localStorage.removeItem('nome_integracao');
+
 				return null;
 			}
 		}
 
 		const nome = decodeURIComponent(nomeRaw);
 
-		// Salva o nome do link como nome permanente de integração.
-		// NÃO apaga inscricoes_autorizadas nem darpe_ultimo_nome —
-		// apenas grava/atualiza a identidade de integração deste navegador.
 		localStorage.setItem('nome_integracao', nome);
 
 		return nome;

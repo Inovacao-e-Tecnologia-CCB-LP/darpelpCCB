@@ -88,7 +88,7 @@ function renderCardsIntegracoes(grupos) {
           <span>${nomeLocal}
           <span class="grupo-secao-count">Total: ${nomes.length}</span>
           </span>
-		  	<button class="btn btn-sm btn-outline-light ms-auto editar-integracao-btn editar-btn"
+		  	<button class="btn btn-sm btn-outline-primary ms-auto editar-integracao-btn editar-btn"
             onclick="abrirModalEditarIntegracao(${idLocal})">
   				<i class="bi bi-pencil me-1"></i>
   				<span class="btn-text">Editar</span>
@@ -143,11 +143,20 @@ function renderCardsIntegracoes(grupos) {
 async function compartilharNomeIntegracao(nomeEncoded, btn) {
 	const nome = decodeURIComponent(nomeEncoded);
 	const original = btn.innerHTML;
+
 	btn.disabled = true;
 	btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`;
 
 	try {
-		await integracoesService.compartilhar(nome);
+		const escolha = await abrirModalEscolhaLink();
+
+		if (!escolha) return;
+
+		if (escolha === 'temporario') {
+			await integracoesService.compartilharTemporario(nome);
+		} else if (escolha === 'permanente') {
+			await integracoesService.compartilharPermanente(nome);
+		}
 	} catch (err) {
 		console.error('Erro ao compartilhar:', err);
 	} finally {

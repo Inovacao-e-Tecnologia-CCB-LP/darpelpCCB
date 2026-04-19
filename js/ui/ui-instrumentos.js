@@ -157,7 +157,7 @@ function renderCardsInstrumentos(instrumentos) {
                 <span class="fw-semibold">${i.nome}</span>
               </div>
               <div class="d-flex gap-2 flex-shrink-0">
-                <button class="btn btn-sm btn-outline-dark editar-btn" onclick="editarInstrumento(${i.id}, this)">
+                <button class="btn btn-sm btn-outline-primary editar-btn" onclick="editarInstrumento(${i.id}, this)">
                   <i class="bi bi-pencil"></i>
 				  <span class="btn-text">Editar</span>
                 </button>

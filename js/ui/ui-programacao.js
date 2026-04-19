@@ -682,7 +682,7 @@ function _abrirDetalhesDia(dia, eventosJson) {
   <div class="text-center mt-3">
     <button class="btn btn-dark btn-sm w-100 mt-2"
       onclick="_novaProgramacaoDoDetalhe(${dia})">
-      <i class="bi bi-plus-circle"></i>
+      <i class="bi bi-plus-lg"></i>
       Nova Programação
     </button>
   </div>`

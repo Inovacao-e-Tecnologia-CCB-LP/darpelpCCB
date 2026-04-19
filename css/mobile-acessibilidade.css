@@ -233,6 +233,7 @@ img {
 
 	.item-card-body {
 		padding: 1rem 1.1rem;
+		text-align: left !important;
 	}
 
 	.card-info-row {
