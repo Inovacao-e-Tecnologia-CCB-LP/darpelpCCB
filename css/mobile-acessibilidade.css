@@ -105,7 +105,7 @@ img {
 
 	/* ── Logo ──────────────────────────────────────────── */
 	.logo {
-		width: 200px;
+		width: 300px;
 	}
 
 	#conteudo h2 {
@@ -233,7 +233,6 @@ img {
 
 	.item-card-body {
 		padding: 1rem 1.1rem;
-		text-align: left !important;
 	}
 
 	.card-info-row {
