@@ -131,12 +131,16 @@ function showEscolherData() {
 			Música: 'bi bi-music-note-beamed',
 		};
 
-		const icone = iconesTipoVisita[p.tipo_visita] || 'bi bi-calendar-event';
+		const tipo = dataStore.tipos_visita?.find((t) => t.id == p.tipo_visita_id);
+
+		const nomeTipo = tipo?.nome || 'Tipo não encontrado';
+
+		const icone = iconesTipoVisita[nomeTipo] || 'bi bi-calendar-event';
 
 		btn.innerHTML = `
 			<i class="${icone}"></i>
 			<span>
-				<strong>${p.tipo_visita} &bull; ${formatarData(p.data)} </strong><br>
+				<strong>${nomeTipo} &bull; ${formatarData(p.data)} </strong><br>
 				<small class="text-muted">${p.descricao} &bull; ${formatarHorario(p.horario)}</small>
 			</span>
 		`;
@@ -537,7 +541,7 @@ async function salvarInscricao(btnEl) {
 		local: escolha.local.id,
 		local_id: escolha.local.id,
 		programacao_id: escolha.programacao.id,
-		tipo_visita: escolha.programacao.tipo_visita,
+		tipo_visita_id: escolha.programacao.tipo_visita_id,
 		instrumento: escolha.instrumento.id,
 		instrumento_id: escolha.instrumento.id,
 		nome,

@@ -17,16 +17,19 @@ class InscricoesService {
      ESTRUTURA
   ========================= */
 
-	montarEstrutura(inscritos, locais, programacao, instrumentos) {
+	montarEstrutura(inscritos, locais, programacao, instrumentos, tiposVisita = []) {
 		const locaisMap = {};
 		const programacaoMap = {};
 		const instrumentosMap = {};
 		const inscritosPorProgramacao = {};
+		const tiposVisitaMap = {};
+
 		const grupos = {};
 
 		locais.forEach((l) => (locaisMap[l.id] = l));
 		programacao.forEach((p) => (programacaoMap[p.id] = p));
 		instrumentos.forEach((i) => (instrumentosMap[i.id] = i));
+		tiposVisita.forEach((t) => (tiposVisitaMap[t.id] = t));
 
 		inscritos.forEach((i) => {
 			const programacaoValida = programacaoMap[i.programacao_id];
@@ -65,6 +68,7 @@ class InscricoesService {
 			programacaoMap,
 			instrumentosMap,
 			inscritosPorProgramacao,
+			tiposVisitaMap,
 		};
 	}
 }

@@ -14,6 +14,11 @@ class UiComponents {
 			.then((text) => {
 				this.painelInstrumentos = text;
 			});
+		await fetch(`js/ui/components/painel-tipos-visita.html`)
+			.then((response) => response.text())
+			.then((text) => {
+				this.painelTiposVisita = text;
+			});
 		await fetch(`js/ui/components/painel-locais.html`)
 			.then((response) => response.text())
 			.then((text) => {
@@ -94,5 +99,9 @@ class UiComponents {
 
 	PainelIntegracoes() {
 		return this.integracoes;
+	}
+
+	PainelTiposVisita() {
+		return this.painelTiposVisita;
 	}
 }

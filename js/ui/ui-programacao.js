@@ -204,11 +204,13 @@ async function carregarProgramacoes(firstTime = false) {
 				dataStore.locais,
 				dataStore.programacao,
 				dataStore.instrumentos || [],
+				dataStore.tipos_visita || [],
 			);
 
 			dataStore.inscricoes = inscritos;
 			instrumentosMap = estrutura.instrumentosMap;
 			estruturaInscritos = estrutura;
+			tiposVisitaMap = estrutura.tiposVisitaMap;
 		}
 
 		programacao = programacao || [];
@@ -372,7 +374,8 @@ function _renderGrade(ano, mes, porDia) {
 				const local = _getLocalById(ev.local_id);
 				const nome = local?.nome || 'Local';
 				const horario = formatarHorario(ev.horario) || '-';
-				const tipo = ev.tipo_visita || '-';
+				const tipoObj = _getTipoVisitaById(ev.tipo_visita_id);
+				const tipo = tipoObj?.nome || 'Tipo não encontrado';
 
 				if (_calModoSomenteLeitura) {
 					// Público
@@ -581,10 +584,15 @@ function _abrirDetalhesDia(dia, eventosJson) {
 				month: '2-digit',
 				year: 'numeric',
 			});
-			const tipo = p.tipo_visita || '-';
-			const tipoIcon = p.tipo_visita?.toLowerCase().includes('mús')
+			const tipoObj = _getTipoVisitaById(p.tipo_visita_id);
+			const tipo = tipoObj?.nome || 'Tipo não encontrado';
+			const tipoNome = tipoObj?.nome?.toLowerCase() || '';
+
+			const tipoIcon = tipoNome.includes('mús')
 				? 'music-note-beamed'
-				: 'book';
+				: tipoNome.includes('evangeli')
+					? 'book'
+					: 'tag';
 			const cor = _getCorLocal(p.local_id);
 
 			// ===== INSCRIÇÕES =====
@@ -839,6 +847,7 @@ function _compartilharWhatsapp(contexto = 'calendario', dia = null) {
    ABRIR MODAL NOVA PROGRAMACAO
 ========================= */
 function _abrirModalProgramacao(programacao = null) {
+	carregarTiposVisitaSelect('progTipo');
 	limparErroCampo('erroValidacaoCamposProgramacao');
 
 	const selectLocal = document.getElementById('progLocal');
@@ -871,7 +880,7 @@ function _abrirModalProgramacao(programacao = null) {
 		document.getElementById('progModalTitulo').innerText = 'Editar Programação';
 		document.getElementById('progId').value = programacao.id ?? '';
 		document.getElementById('progLocal').value = programacao.local_id ?? '';
-		document.getElementById('progTipo').value = programacao.tipo_visita ?? '';
+		document.getElementById('progTipo').value = programacao.tipo_visita_id ?? '';
 		inputData.value = programacao.data || '';
 		document.getElementById('progHorario').value = (programacao.horario || '').replace("'", '');
 
@@ -988,12 +997,12 @@ function excluirProgramacao(id, btnTrash) {
 function montarPayloadProgramacao() {
 	const id = document.getElementById('progId').value;
 	const local_id = document.getElementById('progLocal').value;
-	const tipo_visita = document.getElementById('progTipo').value;
+	const tipo_visita_id = document.getElementById('progTipo').value;
 	const descricao = document.getElementById('progDiaSemana').value;
 	const data_programacao = document.getElementById('progData').value;
 	const horario = document.getElementById('progHorario').value;
 
-	if (!local_id || !tipo_visita || !data_programacao || !horario) {
+	if (!local_id || !tipo_visita_id || !data_programacao || !horario) {
 		mostrarErroCampo('erroValidacaoCamposProgramacao', 'Preencha todos os campos corretamente');
 
 		return null;
@@ -1015,7 +1024,7 @@ function montarPayloadProgramacao() {
 	return {
 		id: id ? Number(id) : null,
 		local_id: Number(local_id),
-		tipo_visita,
+		tipo_visita_id: Number(tipo_visita_id),
 		descricao,
 		data_programacao,
 		horario,

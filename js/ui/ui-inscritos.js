@@ -5,7 +5,7 @@ let estruturaInscritos = {};
 ========================= */
 
 function renderAccordionInscritos(grupos) {
-	const { locaisMap, programacaoMap, instrumentosMap } = estruturaInscritos;
+	const { locaisMap, programacaoMap, instrumentosMap, tiposVisitaMap } = estruturaInscritos;
 
 	let html = '<div class="accordion" id="accordionInscritos">';
 	let index = 0;
@@ -55,13 +55,15 @@ function renderAccordionInscritos(grupos) {
 		pidsValidos.forEach((pid) => {
 			const inscritosLista = programacoes[pid];
 			const p = programacaoMap[pid];
+			const tipo = tiposVisitaMap[p.tipo_visita_id];
+			const nomeTipo = tipo?.nome || 'Tipo não encontrado';
 
 			html += `
         <div class="card mb-3 border-dark">
           <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center gap-2 py-3">
             <div class="text-start">
               <div class="fw-semibold fs-6">
-                ${p.tipo_visita} • ${formatarData(p.data)}
+                ${nomeTipo} • ${formatarData(p.data)}
               </div>
               <div class="small opacity-75">
                 ${p.descricao} • ${formatarHorario(p.horario)}
@@ -81,7 +83,6 @@ function renderAccordionInscritos(grupos) {
 			inscritosLista.forEach((i) => {
 				const auth = localStorageService.buscarAutorizacao(i.id);
 				const podeExcluir = auth && auth.token === i.delete_token;
-
 				const instNome = instrumentosService.obterNomeInstrumento(i, instrumentosMap);
 
 				html += `
@@ -160,6 +161,7 @@ async function showInscritos() {
 			dataStore.locais,
 			dataStore.programacao,
 			dataStore.instrumentos || [],
+			dataStore.tipos_visita || [],
 		);
 
 		renderAccordionInscritos(estruturaInscritos.grupos);
@@ -224,6 +226,8 @@ async function excluirInscricao(id, btn) {
 ========================= */
 
 function compartilhar(pid) {
+	const { tiposVisitaMap } = estruturaInscritos;
+
 	const { locaisMap, programacaoMap, instrumentosMap, inscritosPorProgramacao } =
 		estruturaInscritos;
 
@@ -240,12 +244,14 @@ function compartilhar(pid) {
 	}
 
 	const inscritosProg = inscritosPorProgramacao[pid] || [];
-
 	const dataFormatada = formatarData(p.data);
+
+	const tipo = tiposVisitaMap[p.tipo_visita_id];
+	const nomeTipo = tipo?.nome || 'Tipo não encontrado';
 
 	let mensagem = `*${localObj.nome}*\n\n`;
 	mensagem += ` _${localObj.endereco}_\n`;
-	mensagem += ` *${p.tipo_visita}*\n`;
+	mensagem += ` *${nomeTipo}*\n`;
 	mensagem += ` ${dataFormatada}\n`;
 	mensagem += ` ${formatarHorario(p.horario)}\n\n`;
 	mensagem += `*Inscritos(${inscritosProg.length}/${localObj.limite}):*\n`;

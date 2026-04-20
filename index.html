@@ -479,8 +479,6 @@
 							>
 							<select class="form-select darpe-select" id="regraTipo">
 								<option value="">Selecione o tipo</option>
-								<option value="Música">Música</option>
-								<option value="Evangelização">Evangelização</option>
 							</select>
 						</div>
 
@@ -595,8 +593,6 @@
 							</label>
 							<select class="form-select darpe-select" id="progTipo">
 								<option value="">Selecione o tipo</option>
-								<option value="Música">Música</option>
-								<option value="Evangelização">Evangelização</option>
 							</select>
 						</div>
 
@@ -873,6 +869,57 @@
 			</div>
 		</div>
 
+		<!-- Modal Tipo de Visita -->
+		<div class="modal fade" id="modalTipoVisita" tabindex="-1" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-sm">
+				<div class="modal-content shadow">
+					<div class="modal-header bg-dark text-white">
+						<h5 class="modal-title" id="modalTipoVisitaTitulo">Novo Tipo de Visita</h5>
+						<button
+							type="button"
+							class="btn-close btn-close-white"
+							data-bs-dismiss="modal"
+							aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body">
+						<input type="hidden" id="tipoVisitaId" />
+
+						<div class="mb-3">
+							<label class="form-label fw-semibold" for="tipoVisitaNome">
+								<i class="bi bi-tag me-1"></i>Nome
+							</label>
+							<input
+								type="text"
+								class="form-control"
+								id="tipoVisitaNome"
+								placeholder="Ex: Evangelização"
+								maxlength="50"
+							/>
+						</div>
+
+						<div
+							id="erroValidacaoCamposTipoVisita"
+							class="text-danger mt-1 d-none"
+							style="font-size: 0.85rem"
+						></div>
+					</div>
+					<div class="modal-footer">
+						<button
+							type="button"
+							class="btn btn-outline-secondary"
+							data-bs-dismiss="modal"
+						>
+							Cancelar
+						</button>
+						<button type="button" class="btn btn-dark" id="btnSalvarTipoVisita">
+							Salvar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<!-- Modal Copiar/Mapa -->
 		<div class="modal fade" id="modalMapa" tabindex="-1">
 			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -1049,6 +1096,7 @@
 		<script src="js/app/services/locais.service.js"></script>
 		<script src="js/app/services/local-storage.service.js"></script>
 		<script src="js/app/services/inscricoes.service.js"></script>
+		<script src="js/app/services/tipos-visita.service.js"></script>
 		<script src="js/app/services/auth.service.js"></script>
 		<script src="js/app/auth.js"></script>
 		<script src="js/ui/ui.js"></script>
@@ -1061,6 +1109,7 @@
 		<script src="js/ui/ui-inscricao.js"></script>
 		<script src="js/ui/ui-inscritos.js"></script>
 		<script src="js/ui/ui-relatorio.js"></script>
+		<script src="js/ui/ui-tipos-visita.js"></script>
 		<script src="js/app/services/integracoes.service.js"></script>
 		<script src="js/ui/ui-integracoes.js"></script>
 		<script src="js/ui/darpe-select.js"></script>
