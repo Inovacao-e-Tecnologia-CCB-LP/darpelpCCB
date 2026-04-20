@@ -225,13 +225,13 @@ header .container {
    LOGO
 =========================== */
 .logo {
-	width: 280px;
+	width: 350px;
 	max-width: 75vw;
 }
 
 @media (max-width: 576px) {
 	.logo {
-		width: 220px;
+		width: 300px;
 	}
 }
 
@@ -624,7 +624,7 @@ header .container {
 =========================== */
 @media (max-width: 576px) {
 	.logo {
-		width: 200px;
+		width: 300px;
 	}
 
 	#conteudo h2 {
@@ -1886,6 +1886,7 @@ header .container {
 /* ── Body do card ───────────────────────────────────────── */
 .item-card-body {
 	padding: 0.875rem 1rem;
+	text-align: left !important;
 }
 
 .card-info-row {
