@@ -68,7 +68,11 @@ const UiRelatorios = {
 		card.innerHTML = `
       <div>
         <div class="fw-semibold mb-1">
-          ${p.tipo_visita} – ${formatarData(p.data)}
+          ${(() => {
+				const tipoObj = _getTipoVisitaById(p.tipo_visita_id);
+				const nome = tipoObj?.nome || 'Tipo não encontrado';
+				return `${nome} – ${formatarData(p.data)}`;
+			})()}
         </div>
         <div class="small text-muted lh-sm">
           ${p.descricao} (${p.horario?.replace(/'/g, '')})
@@ -274,8 +278,9 @@ function carregarProgramacoesRelatorio(localId) {
 
 				RelatorioState.programacaoId = p.id;
 				document.getElementById('dataRelatorio').value = p.data;
+				const tipoNome = _getTipoVisitaById(p.tipo_visita_id)?.nome;
 
-				if (p.tipo_visita === 'Evangelização') {
+				if (tipoNome === 'Evangelização') {
 					camposEv?.classList.remove('d-none');
 				} else {
 					camposEv?.classList.add('d-none');
@@ -479,7 +484,9 @@ function montarDadosRelatorio() {
 		qtdColaboradores: form.qtdColaboradores,
 		observacoes: form.observacoes,
 		evangelizacao:
-			programacao.tipo_visita === 'Evangelização' ? { palavra: form.palavra || '-' } : null,
+			_getTipoVisitaById(programacao.tipo_visita_id)?.nome === 'Evangelização'
+				? { palavra: form.palavra || '-' }
+				: null,
 	};
 }
 
@@ -555,7 +562,10 @@ async function gerarPDF() {
 	/* ================= DADOS PRINCIPAIS ================= */
 	linha('Nome do Responsável:', dados.responsavel);
 	linha('Nome do Local:', dados.local.nome);
-	linha('Tipo de Visita:', `${dados.programacao.tipo_visita} – ${dados.programacao.descricao}`);
+
+	const tipoNome =
+		_getTipoVisitaById(dados.programacao.tipo_visita_id)?.nome || 'Tipo não encontrado';
+	linha('Tipo de Visita:', `${tipoNome} – ${dados.programacao.descricao}`);
 
 	const horarioLimpo = dados.programacao.horario.replace(/'/g, '');
 	linha('Data e Hora:', `${formatarData(dados.programacao.data)} – ${horarioLimpo}`);
@@ -660,7 +670,7 @@ function gerarMensagemWhatsAppRelatorio(dados) {
 	linhas.push(`*Horário:* _${dados.programacao?.horario?.replace(/'/g, '') || '-'}_`);
 
 	linhas.push(
-		`*Tipo de Visita:* _${dados.programacao?.tipo_visita} – ${dados.programacao?.descricao}_`,
+		`*Tipo de Visita:* _${_getTipoVisitaById(dados.programacao?.tipo_visita_id)?.nome || 'Tipo não encontrado'} – ${dados.programacao?.descricao}_`,
 	);
 
 	if (dados.qtdInternos > 0) {

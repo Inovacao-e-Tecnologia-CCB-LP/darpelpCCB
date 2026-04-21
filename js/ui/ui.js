@@ -123,6 +123,7 @@ const _BTN_ACAO_SELETORES = [
 	'#novaRegraBtn',
 	'#novaIntegracaoBtn',
 	'#novaProgramacaoBtn',
+	'#novoTipoVisitaBtn',
 	// ações inline de tabelas / cards
 	'.editar-btn',
 	'.excluir-btn',

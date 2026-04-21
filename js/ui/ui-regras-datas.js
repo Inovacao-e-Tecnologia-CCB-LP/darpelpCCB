@@ -88,7 +88,11 @@ function renderCardsRegrasDatas(regras) {
               <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
                 <div class="d-flex align-items-center gap-2">
                   ${ativoEl}
-                  <span class="fw-semibold">${r.tipo_visita}</span>
+                  ${(() => {
+						const tipoObj = _getTipoVisitaById(r.tipo_visita_id);
+						const nome = tipoObj?.nome || 'Tipo não encontrado';
+						return `<span class="fw-semibold">${nome}</span>`;
+					})()}
                 </div>
                 <div class="d-flex gap-2 flex-shrink-0">
 					<button class="btn btn-sm btn-outline-primary editar-btn" onclick="editarRegra(${r.id}, this)">
@@ -130,13 +134,13 @@ function renderCardsRegrasDatas(regras) {
 function montarPayloadRegra() {
 	const id = document.getElementById('regraId').value;
 	const localId = document.getElementById('regraLocal').value;
-	const tipo = document.getElementById('regraTipo').value.trim();
+	const tipo_visita_id = document.getElementById('regraTipo').value;
 	const dia = document.getElementById('regraDiaSemana').value;
 	const ordinal = document.getElementById('regraOrdinal').value;
 	const horario = document.getElementById('regraHorario').value;
 	const ativo = document.getElementById('regraAtivo').checked;
 
-	if (!localId || !tipo || !horario) {
+	if (!localId || !tipo_visita_id || !horario) {
 		mostrarErroCampo('erroValidacaoCamposRegra', 'Preencha todos os campos corretamente');
 		return null;
 	}
@@ -144,7 +148,7 @@ function montarPayloadRegra() {
 	return {
 		id: id ? Number(id) : null,
 		local_id: Number(localId),
-		tipo_visita: tipo,
+		tipo_visita_id: Number(tipo_visita_id),
 		dia_semana: Number(dia),
 		ordinal: Number(ordinal),
 		horario: String(horario),
@@ -154,7 +158,7 @@ function montarPayloadRegra() {
 
 function preencherFormularioRegra(regra) {
 	document.getElementById('regraId').value = regra.id;
-	document.getElementById('regraTipo').value = regra.tipo_visita;
+	document.getElementById('regraTipo').value = regra.tipo_visita_id;
 	document.getElementById('regraDiaSemana').value = regra.dia_semana;
 	document.getElementById('regraOrdinal').value = regra.ordinal;
 	document.getElementById('regraHorario').value = formatarHorario(regra.horario);
@@ -190,6 +194,7 @@ async function reloadRegras() {
 ========================= */
 
 function abrirModalNovaRegra() {
+	carregarTiposVisitaSelect('regraTipo');
 	limparErroCampo('erroValidacaoCamposRegra');
 
 	document.getElementById('modalRegraTitulo').innerText = 'Nova Regra';

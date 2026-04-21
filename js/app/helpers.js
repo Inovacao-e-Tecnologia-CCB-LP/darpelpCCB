@@ -33,3 +33,30 @@ function carregarImagemBase64(url) {
 		img.src = url;
 	});
 }
+
+async function carregarTiposVisitaSelect(selectId) {
+	try {
+		const select = document.getElementById(selectId);
+
+		let tipos = dataStore.tiposVisita || (await tiposVisitaService.listar());
+
+		if (tipos?.error) throw new Error(tipos.error);
+
+		tipos = tipos || [];
+
+		// limpa mantendo o primeiro option
+		select.innerHTML = `<option value="">Selecione o tipo</option>`;
+
+		tipos
+			.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
+			.forEach((t) => {
+				select.innerHTML += `<option value="${t.id}">${t.nome}</option>`;
+			});
+	} catch (err) {
+		console.error('Erro ao carregar tipos de visita no select', err);
+	}
+}
+
+function _getTipoVisitaById(id) {
+	return (dataStore.tipos_visita || []).find((t) => String(t.id) === String(id));
+}

@@ -28,3 +28,7 @@ function irParaTelaRelatorios() {
 function irParaTelaIntegracoes() {
 	navigateTo(() => guardAdmin(abrirTelaIntegracoes));
 }
+
+function irParaTelaTiposVisita() {
+	navigateTo(() => guardAdmin(abrirTelaTiposVisita));
+}
