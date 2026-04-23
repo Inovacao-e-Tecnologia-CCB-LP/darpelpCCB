@@ -3,6 +3,7 @@ let inscritosPorProgramacao = {};
 let instrumentosMap = {};
 let locaisMap = {};
 let programacaoMap = {};
+let programacoes = [];
 
 /* =========================
    STATE
@@ -106,12 +107,21 @@ async function abrirTelaRelatorios() {
 
 	travarUI();
 	try {
-		inscritos = await inscricoesService.listar();
+		const base = await relatoriosService.carregarBase();
+
+		inscritos = base.inscritos;
+		programacoes = base.programacoes;
+
+		const programacoesNormalizadas = programacoes.map((p) => ({ ...p, id: String(p.id) }));
+		const inscritosNormalizados = inscritos.map((i) => ({
+			...i,
+			programacao_id: String(i.programacao_id),
+		}));
 
 		const estrutura = inscricoesService.montarEstrutura(
-			inscritos,
-			dataStore.locais,
-			dataStore.programacao,
+			inscritosNormalizados,
+			base.locais,
+			programacoesNormalizadas,
 			dataStore.instrumentos || [],
 		);
 
@@ -252,12 +262,13 @@ function carregarProgramacoesRelatorio(localId) {
 	lista.innerHTML = '';
 	camposEv?.classList.add('d-none');
 
-	const programacoes = relatoriosService.filtrarProgramacoesComInscritos(
+	const listaProgramacoes = relatoriosService.filtrarProgramacoesComInscritos(
 		localId,
 		inscritosPorProgramacao,
+		programacoes,
 	);
 
-	if (!programacoes.length) {
+	if (!listaProgramacoes.length) {
 		lista.innerHTML = UiRelatorios.alerta(
 			'warning',
 			'Nenhuma programação com inscritos para este local',
@@ -265,7 +276,7 @@ function carregarProgramacoesRelatorio(localId) {
 		return;
 	}
 
-	programacoes.forEach((p) => {
+	listaProgramacoes.forEach((p) => {
 		lista.appendChild(
 			UiRelatorios.cardProgramacao(p, (card) => {
 				lista.querySelectorAll('.programacao-item').forEach((el) => {
@@ -421,11 +432,13 @@ function salvarMusicoModal() {
 		instrumentoNome: instrumento || '',
 	};
 
-	if (!inscritosPorProgramacao[programacaoId]) {
-		inscritosPorProgramacao[programacaoId] = [];
+	const progId = String(programacaoId);
+
+	if (!inscritosPorProgramacao[progId]) {
+		inscritosPorProgramacao[progId] = [];
 	}
 
-	inscritosPorProgramacao[programacaoId].push(novo);
+	inscritosPorProgramacao[progId].push(novo);
 
 	// Atualiza lista
 	carregarMusicosRelatorio(programacaoId);
@@ -460,9 +473,9 @@ function montarDadosRelatorio() {
 	localStorageService.salvarNome(form.responsavel);
 
 	const local = dataStore.locais.find((l) => l.id == localId);
-	const programacao = dataStore.programacao.find((p) => p.id == programacaoId);
+	const programacao = programacoes.find((p) => p.id == programacaoId);
 
-	const musicosRaw = inscritosPorProgramacao[programacaoId] || [];
+	const musicosRaw = inscritosPorProgramacao[String(programacaoId)] || [];
 
 	const musicos = musicosRaw.map((c) => ({
 		...c,
