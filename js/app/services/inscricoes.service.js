@@ -5,6 +5,10 @@ class InscricoesService {
 		return await appScriptApi.view(this.entity);
 	}
 
+	async listarTodas() {
+		return await appScriptApi.view('inscricoes_all');
+	}
+
 	async criar(payload) {
 		return await appScriptApi.create(this.entity, payload);
 	}
@@ -43,7 +47,8 @@ class InscricoesService {
 				return;
 			}
 
-			(inscritosPorProgramacao[i.programacao_id] ??= []).push(i);
+			const progId = String(i.programacao_id);
+			(inscritosPorProgramacao[progId] ??= []).push(i);
 
 			let localNome = null;
 

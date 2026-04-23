@@ -5,6 +5,10 @@ class ProgramacaoService {
 		return await appScriptApi.view(this.entity);
 	}
 
+	async listarTodas() {
+		return await appScriptApi.view('programacao_all');
+	}
+
 	async excluir(id, password, signal) {
 		return await appScriptApi.deleteWithPassword(this.entity, id, password, signal);
 	}

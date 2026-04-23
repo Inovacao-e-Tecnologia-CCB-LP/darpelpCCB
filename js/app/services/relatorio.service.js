@@ -1,18 +1,19 @@
 class RelatoriosService {
 	async carregarBase() {
-		const inscritos = await inscricoesService.listar();
+		const inscritos = await inscricoesService.listarTodas();
+		const programacoes = await programacaoService.listarTodas();
 
 		return {
 			inscritos,
+			programacoes,
 			locais: dataStore.locais || [],
-			programacoes: dataStore.programacao || [],
 		};
 	}
 
-	filtrarProgramacoesComInscritos(localId, inscritosPorProgramacao) {
-		return dataStore.programacao.filter((p) => {
+	filtrarProgramacoesComInscritos(localId, inscritosPorProgramacao, programacoes) {
+		return programacoes.filter((p) => {
 			if (p.local_id != localId) return false;
-			return (inscritosPorProgramacao[p.id] || []).length > 0;
+			return (inscritosPorProgramacao[String(p.id)] || []).length > 0;
 		});
 	}
 
